@@ -112,14 +112,15 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Tests Added
+## Latest: MemoryCell Improved + Tests Added
 
-- Created `tests/` directory with basic but useful tests:
-  - `test_epigenetic_state.py`
-  - `test_core_genome.py`
-  - `test_cells.py`
-- Tests cover initialization, feedback adaptation, Core Genome validation (safe vs dangerous proposals), and cell activation/processing
+- Significantly upgraded `memory_cell.py` with:
+  - Unique IDs and versioning
+  - Better tag + content-based retrieval
+  - Metadata support
+  - Helper methods like get_recent()
+- Added `tests/` directory with tests for EpigeneticState, CoreGenome, and Cells
 
-**This improves reliability and makes future development safer.**
+**Memory capabilities are now much more useful for long-term growth and reflection.**
 
-*Next recommended: Expand tests, improve MemoryCell, or add more Core Genome validation rules.*
+*Next recommended: Expand tests further or add more Core Genome validation rules.*

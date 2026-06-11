@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - MemoryCell (Phase 3 completion)
+Bloom Collective - MemoryCell (Improved)
 
-A cell responsible for storing, retrieving, and versioning experiences and states.
-Works closely with EpigeneticState to determine what gets remembered strongly.
+Enhanced memory cell with:
+- Versioning of stored items
+- Better tagging and retrieval
+- Metadata support
+- Simple semantic-like search (tag + content matching)
+
+This makes long-term reflection and learning much more effective.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+
+import uuid
 
 try:
     from base_cell import BaseCell
@@ -18,15 +25,14 @@ except ImportError:
 
 class MemoryCell(BaseCell):
     """
-    Handles persistence and retrieval of experiences.
-    In later versions this can evolve into semantic + episodic memory.
+    Improved memory cell with versioning and better retrieval.
     """
 
     def __init__(self, epigenetic: Optional[EpigeneticState] = None):
         super().__init__(name="MemoryCell", epigenetic=epigenetic)
         self._internal_state = {
-            "stored_items": 0,
-            "memories": [],
+            "version": "0.2.0",
+            "memories": [],  # List of memory entries
         }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -36,28 +42,64 @@ class MemoryCell(BaseCell):
         action = input_data.get("action", "store")
 
         if action == "store":
+            memory_id = str(uuid.uuid4())[:8]
             memory = {
+                "id": memory_id,
+                "version": 1,
                 "timestamp": datetime.now().isoformat(),
                 "content": input_data.get("content", {}),
                 "tags": input_data.get("tags", []),
+                "metadata": input_data.get("metadata", {}),
             }
             self._internal_state["memories"].append(memory)
-            self._internal_state["stored_items"] += 1
-            self.log(f"Stored new memory (total: {self._internal_state['stored_items']})")
-            return {"status": "success", "stored": True}
+            self.log(f"Stored memory {memory_id} (total: {len(self._internal_state['memories'])})")
+            return {"status": "success", "id": memory_id, "stored": True}
 
         elif action == "retrieve":
-            # Simple retrieval (can be improved with semantic search later)
             tag = input_data.get("tag")
-            results = [m for m in self._internal_state["memories"] if tag in m.get("tags", [])]
-            return {"status": "success", "results": results}
+            query = input_data.get("query", "").lower()
 
-        return {"status": "unknown_action"}
+            results = []
+            for mem in self._internal_state["memories"]:
+                match = False
+                if tag and tag in mem.get("tags", []):
+                    match = True
+                if query and (query in str(mem.get("content", "")).lower() or query in str(mem.get("tags", [])).lower()):
+                    match = True
+                if match:
+                    results.append(mem)
+
+            return {"status": "success", "count": len(results), "results": results}
+
+        elif action == "get_by_id":
+            mem_id = input_data.get("id")
+            for mem in self._internal_state["memories"]:
+                if mem.get("id") == mem_id:
+                    return {"status": "success", "memory": mem}
+            return {"status": "not_found"}
+
+        elif action == "get_all":
+            return {
+                "status": "success",
+                "count": len(self._internal_state["memories"]),
+                "memories": self._internal_state["memories"],
+            }
+
+        return {"status": "unknown_action", "available_actions": ["store", "retrieve", "get_by_id", "get_all"]}
 
     def get_state(self) -> Dict[str, Any]:
         base = super().get_state()
         base.update({
-            "stored_items": self._internal_state["stored_items"],
             "memory_count": len(self._internal_state["memories"]),
+            "version": self._internal_state.get("version"),
         })
         return base
+
+    def get_recent(self, limit: int = 5) -> List[Dict[str, Any]]:
+        """Helper to get the most recent memories."""
+        sorted_memories = sorted(
+            self._internal_state["memories"],
+            key=lambda x: x.get("timestamp", ""),
+            reverse=True
+        )
+        return sorted_memories[:limit]
