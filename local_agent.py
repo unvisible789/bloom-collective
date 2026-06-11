@@ -2,17 +2,15 @@
 """
 Bloom Collective - Local Agent
 
-A modular local agent for planning and executing goals using
-specialized cells.
+A modular local agent for planning and executing goals.
 
-Core Features:
-- Goal planning with structured steps (PlanningCell)
-- Intelligent external AI delegation (SystemAICell)
-- Safe file system operations (FileSystemCell)
-- Outcome verification (VerificationCell)
-- Full execution history with persistence
-- Human-readable summaries
-- Robust error handling throughout
+This agent coordinates specialized cells to:
+- Plan goals (PlanningCell)
+- Use external AI when beneficial (SystemAICell)
+- Perform file system operations (FileSystemCell)
+- Verify outcomes (VerificationCell)
+
+It maintains execution history and provides human-readable summaries.
 """
 
 from datetime import datetime
