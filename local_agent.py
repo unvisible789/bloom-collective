@@ -2,17 +2,19 @@
 """
 Bloom Collective - Local Agent
 
-A local goal-planning and execution agent.
+A modular local agent that can plan and execute goals using
+specialized cells (Planning, Verification, SystemAI, FileSystem).
 
-Features:
-- Planning using PlanningCell
-- Intelligent external AI usage (SystemAICell)
-- File system operations (FileSystemCell)
-- Outcome verification (VerificationCell)
-- Execution history with persistence methods
+Key Features:
+- Goal planning with dependencies and priorities
+- Intelligent external AI usage (Grok, Copilot, etc.)
+- Safe file system operations
+- Outcome verification
+- Execution history with persistence
 - Human-readable summaries
-- Robust error handling
+- Robust error handling at every level
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -31,6 +33,12 @@ except ImportError:
 
 
 class LocalAgent:
+    """
+    Local goal execution agent.
+
+    Coordinates multiple specialized cells to plan and execute goals.
+    """
+
     def __init__(self, verbose: bool = True):
         self.planning = PlanningCell() if PlanningCell else None
         self.verification = VerificationCell() if VerificationCell else None
@@ -45,6 +53,7 @@ class LocalAgent:
             print(f"[LocalAgent] {message}")
 
     def _safe_call(self, cell, method: str, *args, **kwargs) -> Dict[str, Any]:
+        """Safely call a method on a cell. Returns error dict on failure."""
         if cell is None:
             return {"status": "unavailable"}
         try:
@@ -56,6 +65,7 @@ class LocalAgent:
             return {"status": "error", "message": str(e)}
 
     def execute_goal(self, goal: str) -> Dict[str, Any]:
+        """Execute a goal from planning to verification."""
         self._log(f"Starting goal: {goal}")
         start_time = datetime.now()
 
@@ -73,7 +83,7 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI
+            # External AI (if goal seems to benefit from it)
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with", "debug", "refactor"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
@@ -149,20 +159,24 @@ class LocalAgent:
         return result
 
     def plan_goal(self, goal: str) -> List[Dict[str, Any]]:
+        """Return the planned steps for a goal without executing."""
         result = self._safe_call(self.planning, "create_plan", goal)
         if result.get("plan"):
             return result["plan"].get("steps", [])
         return []
 
     def get_history(self) -> List[Dict[str, Any]]:
+        """Return full execution history."""
         return self.history
 
     def get_last_summary(self) -> Dict[str, Any]:
+        """Return summary dict of the most recent execution."""
         if not self.history:
             return {}
         return self.history[-1].get("summary", {})
 
     def get_last_human_summary(self) -> str:
+        """Return a clean, human-readable summary of the last execution."""
         if not self.history:
             return "No executions yet."
 
@@ -180,7 +194,7 @@ class LocalAgent:
         return "\n".join(lines)
 
     def save_history(self, filepath: str = "agent_history.json") -> bool:
-        """Save execution history to a JSON file."""
+        """Save execution history to JSON file."""
         try:
             with open(filepath, "w") as f:
                 json.dump(self.history, f, indent=2, default=str)
@@ -191,9 +205,8 @@ class LocalAgent:
             return False
 
     def load_history(self, filepath: str = "agent_history.json") -> bool:
-        """Load execution history from a JSON file."""
+        """Load execution history from JSON file."""
         try:
-            import json
             with open(filepath, "r") as f:
                 self.history = json.load(f)
             self._log(f"History loaded from {filepath}")
