@@ -112,15 +112,13 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: MemoryCell Improved + Tests Added
+## Latest: Memory Now Active in Growth Cycles
 
-- Significantly upgraded `memory_cell.py` with:
-  - Unique IDs and versioning
-  - Better tag + content-based retrieval
-  - Metadata support
-  - Helper methods like get_recent()
-- Added `tests/` directory with tests for EpigeneticState, CoreGenome, and Cells
+- Updated `bloom_seed.py` to actively use the improved MemoryCell:
+  - Retrieves recent memories before reflection
+  - Stores reflections with rich metadata (cycle number, stage, etc.)
+  - Demonstrates memory context influencing the growth loop
 
-**Memory capabilities are now much more useful for long-term growth and reflection.**
+**Memory is now a living part of the self-improvement process.**
 
-*Next recommended: Expand tests further or add more Core Genome validation rules.*
+*Next recommended: Expand tests or add more Core Genome validation rules.*

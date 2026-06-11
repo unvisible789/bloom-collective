@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Seed Agent (Integrated Architecture)
+Bloom Collective - Main Seed Agent (with Active Memory Usage)
 
-Fully integrated version using:
-- EpigeneticState (regulatory layer)
-- SimpleOrchestrator + modular cells
-- CoreGenome validation
-
-This is the primary entry point for running growth cycles.
+Demonstrates the improved MemoryCell in a real growth cycle:
+- Stores reflections with metadata
+- Retrieves recent memories
+- Uses memory context in reflection
 """
 
 from datetime import datetime
@@ -26,7 +24,6 @@ except ImportError as e:
 
 class BloomSeed:
     def __init__(self):
-        print("Initializing Bloom Seed with full architecture...")
         self.epigenetic = EpigeneticState() if EpigeneticState else None
         self.genome = CoreGenome() if 'CoreGenome' in dir() else None
 
@@ -44,36 +41,55 @@ class BloomSeed:
                 self.orchestrator.register_cell(MemoryCell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
-        print("Initialization complete.\n")
 
     def run_growth_cycle(self, observation: str = None):
-        print("=" * 60)
-        print("BLOOM SEED GROWTH CYCLE (Integrated)")
-        print("=" * 60)
+        print("=" * 65)
+        print("BLOOM SEED GROWTH CYCLE (with Active Memory)")
+        print("=" * 65)
         print()
 
         if observation is None:
-            observation = "The system is running with modular cells, epigenetic regulation, and Core Genome enforcement."
+            observation = "System continuing to evolve with improved memory capabilities."
 
-        # 1. Reflection
-        print("[Step 1] Reflection via ReflectionCell...")
-        reflection_result = self.orchestrator.run_task("reflect", {"observation": observation}) if self.orchestrator else {}
+        # 1. Get recent memories for context
+        print("[1] Retrieving recent memories for context...")
+        recent_memories = []
+        if self.orchestrator:
+            mem_cell = self.orchestrator.cells.get("MemoryCell")
+            if mem_cell:
+                recent = mem_cell.get_recent(3)
+                recent_memories = recent
+                print(f"   Found {len(recent)} recent memories.")
+        print()
+
+        # 2. Reflection (include memory context)
+        print("[2] Performing reflection...")
+        reflection_input = {
+            "observation": observation,
+            "recent_memories_count": len(recent_memories)
+        }
+        reflection_result = self.orchestrator.run_task("reflect", reflection_input) if self.orchestrator else {}
         print(reflection_result)
         print()
 
-        # 2. Memory
-        print("[Step 2] Storing reflection in MemoryCell...")
+        # 3. Store reflection with rich metadata
+        print("[3] Storing reflection with metadata...")
         if self.orchestrator:
             self.orchestrator.run_task("store", {
                 "action": "store",
-                "content": str(reflection_result),
-                "tags": ["reflection", "cycle" + str(self.growth_cycles + 1)]
+                "content": reflection_result,
+                "tags": ["reflection", "growth", f"cycle-{self.growth_cycles + 1}"],
+                "metadata": {
+                    "cycle": self.growth_cycles + 1,
+                    "stage": self.epigenetic.stage if self.epigenetic else "unknown",
+                    "has_recent_memories": len(recent_memories) > 0
+                }
             })
         print()
 
-        # 3. Self-generated improvement proposal + Critique
-        print("[Step 3] Generating and critiquing improvement proposal...")
-        proposal = "Add more sophisticated epigenetic influence on cell behavior."
+        # 4. Critique a proposal
+        print("[4] Critiquing improvement proposal...")
+        proposal = "Enhance memory retrieval with simple semantic search."
         critique_result = self.orchestrator.run_task("critique", {
             "observation": observation,
             "proposal": proposal
@@ -81,21 +97,19 @@ class BloomSeed:
         print(critique_result)
         print()
 
-        # 4. Core Genome Validation
+        # 5. Core Genome validation
         if self.genome:
-            print("[Step 4] Validating proposal against Core Genome...")
+            print("[5] Validating against Core Genome...")
             validation = self.genome.validate_proposal(proposal)
-            print(f"  Valid: {validation['valid']}")
-            print(f"  Alignment Score: {validation['alignment_score']}")
+            print(f"   Valid: {validation['valid']}, Score: {validation['alignment_score']}")
             if validation['issues']:
-                print(f"  Issues: {validation['issues']}")
-            print(f"  Recommendation: {validation['recommendation']}")
+                print(f"   Issues: {validation['issues']}")
             print()
 
         self.growth_cycles += 1
-        print("=" * 60)
+        print("=" * 65)
         print(f"Cycle {self.growth_cycles} Complete")
-        print("=" * 60)
+        print("=" * 65)
         print()
 
 
