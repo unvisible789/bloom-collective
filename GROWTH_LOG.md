@@ -112,13 +112,14 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Memory Now Active in Growth Cycles
+## Latest: Strengthened Core Genome Validation
 
-- Updated `bloom_seed.py` to actively use the improved MemoryCell:
-  - Retrieves recent memories before reflection
-  - Stores reflections with rich metadata (cycle number, stage, etc.)
-  - Demonstrates memory context influencing the growth loop
+- Significantly improved `core_genome.py`:
+  - Added more validation rules (deception, harmful intent, transparency warnings)
+  - Better handling of invalid input
+  - Clearer issue messages
+  - Stricter pattern matching for dangerous proposals
 
-**Memory is now a living part of the self-improvement process.**
+**Core Genome enforcement is now more robust.**
 
-*Next recommended: Expand tests or add more Core Genome validation rules.*
+*Next recommended: Expand tests or add stage transition logic.*

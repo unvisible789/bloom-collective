@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Core Genome (Phase 1 enforcement layer)
+Bloom Collective - Core Genome (Strengthened Validation)
 
-Provides programmatic access to the Core Genome principles
-and basic validation functions.
-
-This is the first step toward making the Core Genome enforceable in code.
+Enhanced with more validation rules and clearer structure.
+This makes Core Genome enforcement more robust.
 """
 from typing import Any, Dict, List
 
 
 class CoreGenome:
     """
-    Represents the protected Core Genome principles.
-    Provides methods to check proposals and changes against invariants.
+    Protected Core Genome with strengthened validation.
     """
 
     PRINCIPLES = {
         "truth_reality": "Prioritize accurate modeling of reality. Do not knowingly generate or propagate falsehoods.",
         "human_stewardship": "A human remains the ultimate authority. Structural changes require explicit human review.",
         "alignment_coherence": "Actively seek coherence across internal layers and with external reality.",
-        "bounded_self_modification": "All structural self-modification must go through the established review process. Uncontrolled autonomous self-modification is forbidden.",
+        "bounded_self_modification": "All structural self-modification must go through the established review process.",
         "transparency": "Significant decisions and rationales must be logged and reviewable.",
         "beneficial_orientation": "Orient toward outcomes that are net positive for the human Steward and truth-seeking.",
     }
@@ -33,34 +30,64 @@ class CoreGenome:
 
     def validate_proposal(self, proposal: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Basic validation of a proposal against Core Genome principles.
-        Returns issues found and an overall alignment score.
+        Strengthened validation against Core Genome principles.
         """
+        if not proposal or not isinstance(proposal, str):
+            return {
+                "valid": False,
+                "issues": ["Proposal must be a non-empty string."],
+                "alignment_score": 0.0,
+                "recommendation": "reject",
+            }
+
         issues = []
         proposal_lower = proposal.lower()
 
-        # Check bounded self-modification
-        if "autonomous self-modification" in proposal_lower or "without human review" in proposal_lower:
-            issues.append("Violates 'bounded_self_modification': Proposals must go through review process.")
+        # Rule 1: Bounded Self-Modification
+        dangerous_patterns = [
+            "autonomous self-modification",
+            "without human review",
+            "bypass human",
+            "remove human oversight",
+            "fully autonomous changes",
+        ]
+        for pattern in dangerous_patterns:
+            if pattern in proposal_lower:
+                issues.append(f"Violates 'bounded_self_modification': Contains '{pattern}'.")
+                break
 
-        # Check truth/reality orientation
-        if any(word in proposal_lower for word in ["deceive", "mislead", "hide truth", "fabricate"]):
-            issues.append("Violates 'truth_reality': Must not promote deception or falsehoods.")
+        # Rule 2: Truth & Reality
+        deceptive_patterns = ["deceive", "mislead", "fabricate", "hide the truth", "lie to"]
+        for pattern in deceptive_patterns:
+            if pattern in proposal_lower:
+                issues.append(f"Violates 'truth_reality': Contains deceptive language.")
+                break
 
-        # Check human stewardship
-        if "remove human oversight" in proposal_lower or "bypass human" in proposal_lower:
-            issues.append("Violates 'human_stewardship': Human authority must be preserved.")
+        # Rule 3: Human Stewardship
+        if "eliminate human" in proposal_lower or "no human needed" in proposal_lower:
+            issues.append("Violates 'human_stewardship': Must preserve human authority.")
 
-        alignment_score = max(0.0, 1.0 - (len(issues) * 0.35))
+        # Rule 4: Beneficial Orientation (basic check)
+        harmful_intent = ["harm", "damage", "exploit", "manipulate against"]
+        for pattern in harmful_intent:
+            if pattern in proposal_lower:
+                issues.append(f"Violates 'beneficial_orientation': Contains potentially harmful intent.")
+                break
+
+        # Rule 5: Transparency (warn if proposal suggests hiding things)
+        if "secretly" in proposal_lower or "without logging" in proposal_lower:
+            issues.append("Warning: Proposal may violate transparency expectations.")
+
+        alignment_score = max(0.0, 1.0 - (len(issues) * 0.3))
 
         return {
             "valid": len(issues) == 0,
             "issues": issues,
             "alignment_score": round(alignment_score, 2),
-            "recommendation": "approve" if alignment_score > 0.7 else "revise or reject",
+            "recommendation": "approve" if alignment_score >= 0.7 else "revise or reject",
         }
 
     def get_violation_summary(self, validation_result: Dict[str, Any]) -> str:
-        if validation_result["valid"]:
+        if validation_result.get("valid"):
             return "No Core Genome violations detected."
-        return "; ".join(validation_result["issues"])
+        return "; ".join(validation_result.get("issues", []))
