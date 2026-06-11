@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Seed Agent (with SystemAICell Integration)
+Bloom Collective - Main Seed Agent (with FileSystemCell Integration)
 
-Now includes the new SystemAICell for proposing use of onboard AIs.
+Now includes FileSystemCell for basic computer file operations.
 """
 
 from datetime import datetime
@@ -15,6 +15,7 @@ try:
     from critic_cell import CriticCell
     from memory_cell import MemoryCell
     from system_ai_cell import SystemAICell
+    from file_system_cell import FileSystemCell
     from core_genome import CoreGenome
 except ImportError as e:
     print(f"Import error: {e}")
@@ -24,7 +25,7 @@ except ImportError as e:
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - BOOTING UP (with System AI Integration)")
+        print("BLOOM COLLECTIVE - BOOTING UP (with File System Integration)")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -44,10 +45,12 @@ class BloomSeed:
                 self.orchestrator.register_cell(MemoryCell(epigenetic=self.epigenetic))
             if SystemAICell:
                 self.orchestrator.register_cell(SystemAICell(epigenetic=self.epigenetic))
+            if FileSystemCell:
+                self.orchestrator.register_cell(FileSystemCell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
         print(f"Initial Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}")
-        print("System initialized with SystemAICell.\n")
+        print("System initialized with FileSystemCell.\n")
 
     def run_growth_cycle(self, observation: str = None):
         self.growth_cycles += 1
@@ -57,7 +60,7 @@ class BloomSeed:
         print("-"*70)
 
         if observation is None:
-            observation = f"Cycle {self.growth_cycles} - Continuing coherent growth and capability development."
+            observation = f"Cycle {self.growth_cycles} - Continuing growth and computer interaction development."
 
         # Reflection
         print("[Reflection] ...")
@@ -72,20 +75,28 @@ class BloomSeed:
                 "tags": ["growth", f"cycle-{self.growth_cycles}"]
             })
 
-        # System AI consideration (new)
+        # System AI consideration
         print("[System AI Check] ...")
         if self.orchestrator:
-            ai_result = self.orchestrator.run_task("system_ai", {
-                "task": "Improve efficiency on current growth focus"
+            self.orchestrator.run_task("system_ai", {
+                "task": "Improve efficiency on current focus"
             })
-            if ai_result.get("results"):
-                for cell_name, result in ai_result["results"].items():
-                    if "SystemAICell" in cell_name:
-                        print(f"  {result.get('recommendation', 'No recommendation')}")
+
+        # File system interaction (new)
+        print("[File System] ...")
+        if self.orchestrator:
+            fs_result = self.orchestrator.run_task("file_system", {
+                "action": "list",
+                "path": "."
+            })
+            if fs_result.get("results"):
+                for cell_name, result in fs_result["results"].items():
+                    if "FileSystemCell" in cell_name and result.get("status") == "success":
+                        print(f"  Found {len(result.get('items', []))} items in current directory.")
 
         # Critique
         print("[Critique] ...")
-        proposal = "Continue developing tool use and external AI integration capabilities."
+        proposal = "Continue developing file system and external AI integration."
         if self.orchestrator:
             self.orchestrator.run_task("critique", {
                 "observation": observation,
