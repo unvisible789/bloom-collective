@@ -42,4 +42,6 @@ Thumbs.db
 
 # Project specific
 memory/*.json
+memory/*.jsonl
+memory/delegations/
 !memory/.gitkeep
