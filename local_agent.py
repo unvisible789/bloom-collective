@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Improved action selection)
+Bloom Collective - Local Agent (with get_last_summary)
 
-Better logic for deciding which actions to take based on plan steps.
+Added convenience method to quickly get summary of last execution.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -62,14 +62,14 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI decision
+            # External AI
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # Process plan steps intelligently
+            # Process plan steps
             executed = 0
             failed = 0
 
@@ -146,11 +146,19 @@ class LocalAgent:
     def get_history(self) -> List[Dict[str, Any]]:
         return self.history
 
+    def get_last_summary(self) -> Dict[str, Any]:
+        if not self.history:
+            return {}
+        last = self.history[-1]
+        return last.get("summary", {})
+
 
 if __name__ == "__main__":
     agent = LocalAgent(verbose=True)
-    result = agent.execute_goal("List files and create a summary")
+    result = agent.execute_goal("List files and create output.txt")
     print("\n=== Execution Complete ===")
     print(f"Status: {result['status']}")
-    print(f"Steps: {result['summary'].get('steps_executed', 0)} executed, {result['summary'].get('steps_failed', 0)} failed")
-    print(f"Duration: {result['summary'].get('duration_seconds', 0):.2f}s")
+    summary = agent.get_last_summary()
+    print(f"Steps executed: {summary.get('steps_executed', 0)}")
+    print(f"Steps failed: {summary.get('steps_failed', 0)}")
+    print(f"Duration: {summary.get('duration_seconds', 0):.2f}s")
