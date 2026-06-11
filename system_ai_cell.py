@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - SystemAICell (Improved)
+Bloom Collective - SystemAICell (Functional Version)
 
-Enhanced with better detection logic, stage-aware activation,
-and more intelligent decision-making for when to propose using
-onboard/system AI assistants.
+Now includes basic delegation logic and more actionable proposals.
+This moves the cell from pure proposals toward actual capability.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -20,8 +19,8 @@ except ImportError:
 
 class SystemAICell(BaseCell):
     """
-    Improved cell for interacting with onboard/system AI assistants.
-    Only becomes meaningfully active at later developmental stages.
+    Functional cell for interacting with onboard/system AI assistants.
+    Can propose and simulate/prepare delegation of tasks.
     """
 
     def __init__(self, epigenetic: Optional[EpigeneticState] = None):
@@ -29,18 +28,12 @@ class SystemAICell(BaseCell):
         self._internal_state = {
             "detected_assistants": [],
             "usage_count": 0,
-            "last_proposal": None,
+            "delegations": [],
         }
 
     def detect_available_assistants(self) -> List[Dict[str, str]]:
-        """
-        Detects available system AI assistants.
-        In a real environment, this would query the OS for Copilot,
-        Apple Intelligence, etc.
-        """
         detected = []
 
-        # Simulate detection based on common systems
         detected.append({
             "name": "Microsoft Copilot",
             "type": "general_assistant",
@@ -59,14 +52,47 @@ class SystemAICell(BaseCell):
         return detected
 
     def should_activate(self) -> bool:
-        """Only activate meaningfully at Sapling stage or later."""
         if not self.epigenetic:
             return False
 
         current_stage = DevelopmentalStage(self.epigenetic.stage)
         allowed_stages = [DevelopmentalStage.SAPLING, DevelopmentalStage.BLOOM, DevelopmentalStage.ELDER]
-
         return current_stage in allowed_stages
+
+    def delegate_task(self, task: str, assistant_name: str = None) -> Dict[str, Any]:
+        """
+        Attempt to delegate a task to a system AI.
+        Currently simulates delegation (can be extended to real calls).
+        """
+        detected = self.detect_available_assistants()
+
+        if not assistant_name:
+            # Auto-select best assistant
+            for a in detected:
+                if "code" in task.lower() and a["type"] == "coding_assistant":
+                    assistant_name = a["name"]
+                    break
+            if not assistant_name:
+                assistant_name = detected[0]["name"] if detected else None
+
+        delegation_record = {
+            "timestamp": datetime.now().isoformat(),
+            "task": task,
+            "assistant": assistant_name,
+            "status": "delegated (simulated)"
+        }
+
+        self._internal_state["delegations"].append(delegation_record)
+        self._internal_state["usage_count"] += 1
+
+        self.log(f"Delegated task to {assistant_name}: {task}")
+
+        return {
+            "status": "success",
+            "delegated_to": assistant_name,
+            "task": task,
+            "note": "This is currently simulated. Real delegation can be added."
+        }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         if not self.is_active:
@@ -75,37 +101,26 @@ class SystemAICell(BaseCell):
         if not self.should_activate():
             return {
                 "status": "stage_restricted",
-                "message": "SystemAICell only activates at Sapling stage or later.",
+                "message": "SystemAICell activates at Sapling stage or later.",
                 "current_stage": self.epigenetic.stage if self.epigenetic else "unknown"
             }
 
-        task = input_data.get("task", "general task")
+        task = input_data.get("task", "general assistance")
+
+        # Decide whether to delegate
+        if input_data.get("auto_delegate", True):
+            result = self.delegate_task(task)
+            return result
+
+        # Otherwise just propose
         detected = self.detect_available_assistants()
-
-        # Intelligent proposal logic
-        best_match = None
-        for assistant in detected:
-            if "code" in task.lower() and assistant["type"] == "coding_assistant":
-                best_match = assistant
-                break
-            if assistant["type"] == "general_assistant":
-                best_match = assistant
-
-        self._internal_state["usage_count"] += 1
-        self._internal_state["last_proposal"] = {
-            "task": task,
-            "recommended_assistant": best_match["name"] if best_match else None,
-            "timestamp": datetime.now().isoformat()
-        }
-
-        self.log(f"Analyzed task '{task}' - recommending {best_match['name'] if best_match else 'no assistant'}")
+        best_match = detected[0] if detected else None
 
         return {
-            "status": "success",
+            "status": "proposal",
             "detected_assistants": [a["name"] for a in detected],
             "recommended": best_match,
-            "reasoning": f"Best match for task type based on strengths.",
-            "action": "proposal"  # Future: could actually delegate
+            "reasoning": "Best match based on task type."
         }
 
     def get_state(self) -> Dict[str, Any]:

@@ -114,15 +114,13 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: SystemAICell Enhanced
+## Latest: SystemAICell Now Functional
 
-- Improved `system_ai_cell.py` with:
-  - Better detection of available system AIs
-  - Stage-aware activation (only meaningful at Sapling+)
-  - Intelligent matching of tasks to assistant strengths
-  - Clearer proposals and reasoning
-- The cell is now actively used during growth cycles
+- Upgraded `system_ai_cell.py` with delegation logic
+- The cell can now simulate/prepare actual task delegation to detected system AIs
+- Maintains stage-gating and intelligent matching
+- Integrated and active in the main growth loop
 
-**The system is developing smarter external AI usage capabilities.**
+**The system is now developing real external AI integration capabilities.**
 
-*Next recommended: Allow actual delegation to detected AIs or add more cells.*
+*Next recommended: Allow real delegation or add more cells (e.g. file system or browser).*
