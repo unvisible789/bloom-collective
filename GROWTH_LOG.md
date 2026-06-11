@@ -49,4 +49,22 @@ Living record of the Bloom Collective's evolution.
 4. Establish developmental stages and basic immune/check mechanisms
 5. Upgrade self-improvement loop to use the new structures
 
-*Sequence structured according to biological inspiration and logical dependency (identity first, then regulation, then modularity, then protection + staged growth).*
+---
+
+## 2026-06-11 - Phase 2 Initiated: Epigenetic & Regulatory Layer
+
+- Added `EPIGENETIC_LAYER.md` with detailed design
+- Covered: capability expression control, developmental stage parameters, context & feedback sensitivity, learning integration
+- Proposed architecture for EpigeneticState object + lightweight regulatory rules engine
+- Strong emphasis on separation from Core Genome while maintaining validation
+- Linked to future persistent memory design
+
+**This phase focuses on the adaptive, context-sensitive "phenotype" of the system.**
+
+**Next in sequence:**
+- Implement initial EpigeneticState class and basic persistence
+- Add simple regulatory logic for Seed stage
+- Enhance bloom_seed.py to use the new state layer
+- Move into Phase 3 (modular cell-like agents) once state foundation is solid
+
+*Sequence is being followed deliberately: identity → regulation/adaptation → modularity → protection + staged growth.*
