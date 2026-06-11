@@ -66,22 +66,24 @@ Living record of the Bloom Collective's evolution.
 ## 2026-06-11 - Phase 2 Implementation: EpigeneticState Class
 
 - Created `epigenetic_state.py` — a runnable, persistent EpigeneticState class
-- Features implemented:
-  - DevelopmentalStage enum (Seed, Sprout, Sapling, Bloom, Elder)
-  - Expression profile with 6 tunable dimensions (creativity, precision, risk_tolerance, reflection_depth, tool_use, modularity)
-  - Active vs silenced modules list
-  - Seed-stage regulatory defaults
-  - Feedback-driven adaptation (update_from_feedback)
-  - Basic stage transition scaffolding
-  - JSON persistence with change history
-  - Demo runnable via `python epigenetic_state.py`
-- This is the first concrete implementation of the regulatory layer
+- Features: DevelopmentalStage enum, expression profile, active/silenced modules, Seed-stage regulation, feedback adaptation, stage transition scaffolding, JSON persistence
 
-**Biological mapping:** This is the epigenetic control layer — it determines how the Core Genome is expressed in different contexts without changing the underlying invariants.
+---
 
-**Next in sequence:**
-- Integrate EpigeneticState into bloom_seed.py (or create a unified state manager)
-- Add more sophisticated regulatory rules
-- Prepare for Phase 3 (modular cell-like agents)
+## 2026-06-11 - Phase 2 Complete: Integration into Core Agent
 
-*Deliberate sequence maintained: Core identity → Regulatory/adaptive layer → Modularity → Protection + staged growth.*
+- Updated `bloom_seed.py` to import and use `EpigeneticState`
+- First functional connection between core growth loop and regulatory layer
+- `run_growth_cycle()` now prints current epigenetic stage and expression profile
+- Reflections include epigenetic context
+- Improvement proposals are lightly colored by current creativity expression level
+- The seed agent is now epigenetically aware
+
+**This completes Phase 2.**
+
+**Current system state:**
+The Bloom Seed can now reflect while "knowing" its own regulatory/epigenetic state. This is the first small but meaningful step toward a system whose behavior is modulated by its internal epigenetic layer rather than being purely hardcoded.
+
+**Next in sequence (Phase 3):** Begin designing modular cell-like agents that can be selectively activated or silenced by the epigenetic layer.
+
+*Sequence maintained: Identity (Phase 1) → Regulatory layer + integration (Phase 2) → Modularity (Phase 3) → Protection + staged growth (Phase 4) → Enhanced self-improvement engine (Phase 5).*
