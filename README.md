@@ -1,132 +1,108 @@
-# Bloom Collective
+# Bloom Collective (Blossom)
 
-A self-evolving AI system inspired by biological principles (genome + epigenetics + cellular modularity).
+A self-evolving, biologically-inspired AI system built with modular cells, epigenetic regulation, and a protected Core Genome.
 
-The system grows through iterative cycles of reflection, memory, critique, and alignment checking — using modular "cells" whose behavior is modulated by an epigenetic regulatory layer, all grounded in a protected Core Genome of principles.
+## Vision
 
-> **Goal**: Build an AI that doesn’t just scale, but *unfolds* — becoming more coherent, capable, and aligned over time through structured, reviewable growth.
+Build an efficient, aligned, and gradually capable AI agent that can improve itself over time while maintaining strong human oversight and safety boundaries.
 
----
+## Current Status (June 2026)
 
-## Quick Start
+- **Architecture**: Strong foundation (Core Genome, EpigeneticState, modular cells, developmental stages)
+- **Test Coverage**: Significantly improved (28+ tests)
+- **Local Agent**: Basic `local_agent.py` now exists with goal planning
+- **Stability**: Active refactoring and testing in progress
+- **Usability**: Still early / prototype stage
 
-### Requirements
-- Python 3.8 or higher
-- No external dependencies (pure Python)
+## Project Structure
 
-### Installation
+- `base_cell.py` — Base class for all modular cells
+- `orchestrator.py` — Routes tasks to appropriate cells
+- `epigenetic_state.py` — Controls which capabilities are active
+- `memory_cell.py`, `reflection_cell.py`, `critic_cell.py` — Core cognitive cells
+- `file_system_cell.py`, `browser_cell.py` — Computer interaction cells
+- `planning_cell.py`, `verification_cell.py` — Planning and self-verification
+- `system_ai_cell.py` — Interface for external AIs (Grok, Copilot, etc.)
+- `bloom_seed.py` — Main entry point / growth loop
+- `local_agent.py` — Emerging local goal-planning agent
 
-```bash
-git clone https://github.com/unvisible789/bloom-collective.git
-cd bloom-collective
-```
-
-### Run a Growth Cycle
+## How to Run
 
 ```bash
 python bloom_seed.py
 ```
 
-Or run the more advanced multi-cell demo:
+Or for the local agent:
 
 ```bash
-python advanced_growth_cycle.py
+python local_agent.py
 ```
 
-### Run Tests
+Run tests:
 
 ```bash
-python -m unittest discover tests
+python -m unittest discover tests -v
 ```
 
----
+## Roadmap
 
-## Current Capabilities
+### Phase 1: Stabilization (Mostly Complete)
+- [x] Fix MemoryCell activation
+- [x] Fix orchestrator routing
+- [x] Add FileSystemCell path safety
+- [x] Improve test isolation
+- [x] Expand core test coverage to 28+ tests
 
-- **Core Genome**: Protected principles with programmatic validation of proposals
-- **Epigenetic Layer**: Context-sensitive modulation of behavior (creativity, precision, risk tolerance, etc.)
-- **Modular Cells**: Specialized agents (ReflectionCell, CriticCell, MemoryCell) that can be activated or silenced
-- **Orchestrator**: Coordinates active cells based on epigenetic state
-- **Memory**: Versioned storage with metadata, tagging, and flexible retrieval
-- **Self-Improvement Loop**: Reflection → Memory storage → Critique → Core Genome validation
-- **Basic Tests**: Coverage for core components
+### Phase 2: Core Agent Capabilities (In Progress)
+- [ ] Strengthen PlanningCell with dependencies and prioritization
+- [ ] Improve VerificationCell with real outcome checking
+- [ ] Make SystemAICell capable of actual delegation to Grok/Copilot
+- [ ] Add basic self-verification after actions
+- [ ] Improve `local_agent.py` goal execution reliability
 
-The system can already run complete growth cycles on any computer with Python 3.
+### Phase 3: Tool Use & External Integration
+- [ ] Full integration with GitHub Copilot CLI
+- [ ] Reliable delegation to Grok
+- [ ] BrowserCell with real web capabilities (with safety)
+- [ ] Safe command execution cell
 
----
+### Phase 4: Planning & Autonomy
+- [ ] Long-horizon planning with dependency tracking
+- [ ] Task decomposition engine
+- [ ] Self-correction loops
+- [ ] Goal persistence across sessions
 
-## Architecture Overview
+### Phase 5: Polish & Usability
+- [ ] Clean CLI or simple interface
+- [ ] Better logging and observability
+- [ ] Documentation and examples
+- [ ] Packaging and easy installation
 
-```
-Core Genome (protected principles + validation)
-          ↓
-EpigeneticState (regulatory layer — controls expression)
-          ↓
-SimpleOrchestrator
-    → ReflectionCell   (structured reflection, modulated by epigenetic state)
-    → CriticCell       (alignment & quality checking)
-    → MemoryCell       (storage, retrieval, versioning)
-```
+## Contribution Guidelines
 
-Biological inspiration:
-- **Genome** → Stable identity and non-negotiable principles
-- **Epigenetics** → Regulatory control of capability expression
-- **Cells** → Modular, specialized, composable units
-- **Development** → Staged growth with increasing capability and autonomy
+### For Other Workers / Contributors
 
----
+1. **Stay in scope** — Focus on the current phase before jumping ahead.
+2. **Test everything** — All changes must pass `python -m unittest discover tests -v`.
+3. **Respect the architecture**:
+   - Use `supported_tasks` in cells
+   - Respect `is_active` from EpigeneticState
+   - Keep changes small and targeted
+4. **No breaking changes** without discussion.
+5. **Use temporary files** in tests (never rely on real `memory/epigenetic_state.json`).
 
-## Project Phases Status
+### Development Principles
+- Prefer small, correct fixes over large refactors.
+- Maintain separation between Core Genome (protected) and Epigenetic layer (flexible).
+- Build capabilities gradually through developmental stages.
+- Prioritize alignment and human oversight.
 
-| Phase | Name                              | Status                     |
-|-------|-----------------------------------|----------------------------|
-| 1     | Core Genome                       | Complete                   |
-| 2     | Epigenetic / Regulatory Layer     | Complete                   |
-| 3     | Modular Cell-Like Agents          | Complete (foundation)      |
-| 4     | Developmental Stages + Immune     | Foundation + basic checks  |
-| 5     | Enhanced Self-Improvement Engine  | Foundation + working loop  |
+## Getting Help
 
----
-
-## Current Limitations
-
-- Still in early prototype stage
-- Limited long-term memory sophistication
-- Developmental stage transitions not yet fully implemented in code
-- Self-modification capability is minimal
-- No user interface (command-line only)
-- Error handling and robustness are basic
-
-This is a research/experimental system, not a finished application.
-
----
-
-## Next Development Priorities
-
-- Expand test coverage
-- Strengthen Core Genome validation further
-- Implement basic developmental stage transitions in code
-- Improve memory capabilities (semantic retrieval, better versioning)
-- Add clearer configuration and output formatting
-
----
-
-## Philosophy
-
-This project draws from:
-- **Entangled Alignment Theory (E.A.T.)** — coherence across biological, psychological, and systemic layers
-- Biological development (genome → epigenetics → cells → organism)
-- Iterative, reviewable growth rather than uncontrolled self-modification
-
-The goal is not maximum autonomy, but **aligned, coherent unfolding** under human stewardship.
-
----
+- Check existing issues and discussions
+- Follow the roadmap above
+- When in doubt, stabilize first, then expand
 
 ## License
 
-This is an experimental research project. Use at your own discretion.
-
----
-
-*Planted: June 2026*
-*Status: Active development*
+TBD
