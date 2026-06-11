@@ -2,8 +2,7 @@
 """
 Bloom Collective - Local Agent (Improved)
 
-Basic local goal-planning and execution agent.
-Improved with better error handling and structure.
+With better error handling and robustness.
 """
 from typing import Any, Dict, List, Optional
 
@@ -33,33 +32,45 @@ class LocalAgent:
             "goal": goal,
             "status": "started",
             "cycles": [],
+            "errors": [],
         }
 
-        # Step 1: Create a plan
-        if self.planning:
-            plan_result = self.planning.create_plan(goal)
-            result["cycles"].append({"action": "plan", "result": plan_result})
+        try:
+            # Step 1: Planning
+            if self.planning:
+                plan_result = self.planning.create_plan(goal)
+                result["cycles"].append({"action": "plan", "result": plan_result})
 
-        # Step 2: Execute plan steps (simplified)
-        # For now we just simulate execution
-        if self.planning and plan_result.get("plan"):
-            for step in plan_result["plan"].get("steps", []):
-                action_result = {"step": step, "status": "executed (simulated)"}
-                result["cycles"].append({"action": "execute_step", "result": action_result})
+            # Step 2: Execute plan steps (basic simulation)
+            if self.planning and plan_result.get("plan"):
+                for step in plan_result["plan"].get("steps", []):
+                    try:
+                        action_result = {"step": step, "status": "executed (simulated)"}
+                        result["cycles"].append({"action": "execute_step", "result": action_result})
+                    except Exception as e:
+                        result["errors"].append(str(e))
 
-        # Step 3: Verify (if available)
-        if self.verification:
-            verify_result = self.verification.verify_action(goal, "Goal completed successfully")
-            result["cycles"].append({"action": "verify", "result": verify_result})
+            # Step 3: Verification
+            if self.verification:
+                verify_result = self.verification.verify_action(goal, "Goal completed successfully")
+                result["cycles"].append({"action": "verify", "result": verify_result})
 
-        result["status"] = "completed"
+            result["status"] = "completed"
+
+        except Exception as e:
+            result["status"] = "error"
+            result["errors"].append(str(e))
+
         self.history.append(result)
         return result
 
     def plan_goal(self, goal: str) -> List[Dict[str, Any]]:
         if self.planning:
-            plan = self.planning.create_plan(goal)
-            return plan.get("plan", {}).get("steps", [])
+            try:
+                plan = self.planning.create_plan(goal)
+                return plan.get("plan", {}).get("steps", [])
+            except Exception:
+                return []
         return []
 
 
