@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Enhanced)
+Bloom Collective - Local Agent (Enhanced with SystemAI integration)
 
-Now uses FileSystemCell for real file operations during execution.
+Now attempts to use SystemAICell for goals that benefit from external AI assistance.
 """
 from typing import Any, Dict, List, Optional
 
@@ -51,21 +51,25 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # Execute using FileSystemCell where possible
+            # Decide if we should use external AI assistance
+            use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
+
+            if use_ai and self.system_ai:
+                ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
+                result["cycles"].append({"action": "system_ai", "result": ai_result})
+
+            # File system operations
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
                     step_text = step.get("step", "") if isinstance(step, dict) else str(step)
 
-                    if "list" in step_text.lower() or "state" in step_text.lower():
+                    if "list" in step_text.lower():
                         fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
                         result["cycles"].append({"action": "file_system", "result": fs_result})
 
                     elif "read" in step_text.lower():
                         fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
                         result["cycles"].append({"action": "file_system", "result": fs_result})
-
-                    else:
-                        result["cycles"].append({"action": "step", "step": step_text, "status": "simulated"})
 
             # Verification
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
@@ -89,5 +93,5 @@ class LocalAgent:
 
 if __name__ == "__main__":
     agent = LocalAgent()
-    result = agent.execute_goal("List files and read README.md")
+    result = agent.execute_goal("Explain the current code structure")
     print(result)
