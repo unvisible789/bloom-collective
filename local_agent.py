@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Further Enhanced)
+Bloom Collective - Local Agent (with basic logging)
 
-Added better execution tracking, result history, and structure.
+Added simple print logging for observability during execution.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -20,13 +20,18 @@ except ImportError:
 
 
 class LocalAgent:
-    def __init__(self):
+    def __init__(self, verbose: bool = True):
         self.planning = PlanningCell() if PlanningCell else None
         self.verification = VerificationCell() if VerificationCell else None
         self.system_ai = SystemAICell() if SystemAICell else None
         self.file_system = FileSystemCell() if FileSystemCell else None
 
         self.history: List[Dict[str, Any]] = []
+        self.verbose = verbose
+
+    def _log(self, message: str):
+        if self.verbose:
+            print(f"[LocalAgent] {message}")
 
     def _safe_call(self, cell, method: str, *args, **kwargs) -> Dict[str, Any]:
         if cell is None:
@@ -40,7 +45,9 @@ class LocalAgent:
             return {"status": "error", "message": str(e)}
 
     def execute_goal(self, goal: str) -> Dict[str, Any]:
+        self._log(f"Starting goal: {goal}")
         start_time = datetime.now()
+
         result = {
             "goal": goal,
             "started_at": start_time.isoformat(),
@@ -51,38 +58,45 @@ class LocalAgent:
 
         try:
             # Planning
+            self._log("Creating plan...")
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
             # Decide whether to use external AI
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
+                self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # Execute file system steps when relevant
+            # File system operations
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
                     step_text = step.get("step", "") if isinstance(step, dict) else str(step)
 
                     if "list" in step_text.lower():
+                        self._log("Listing directory...")
                         fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
                         result["cycles"].append({"action": "file_system", "result": fs_result})
 
                     elif "read" in step_text.lower():
+                        self._log("Reading file...")
                         fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
                         result["cycles"].append({"action": "file_system", "result": fs_result})
 
             # Verification
+            self._log("Verifying outcome...")
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
 
             result["status"] = "completed"
             result["completed_at"] = datetime.now().isoformat()
+            self._log("Goal completed successfully.")
 
         except Exception as e:
             result["status"] = "error"
             result["errors"].append(str(e))
+            self._log(f"Error occurred: {e}")
 
         self.history.append(result)
         return result
@@ -98,6 +112,6 @@ class LocalAgent:
 
 
 if __name__ == "__main__":
-    agent = LocalAgent()
+    agent = LocalAgent(verbose=True)
     result = agent.execute_goal("List files and read README.md")
-    print(result)
+    print("\nFinal result:", result["status"])
