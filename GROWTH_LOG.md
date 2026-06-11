@@ -114,12 +114,13 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Self-Development Directives + SystemAICell
+## Latest: SystemAICell Integrated
 
-- Updated `core_genome.py` with embedded Self-Development Directives (including instructions for tool development and external AI usage)
-- Created `system_ai_cell.py` — a new cell for detecting and proposing use of onboard AIs (Copilot, etc.)
-- This begins the implementation of autonomous capability growth as requested
+- `system_ai_cell.py` is now registered in the main orchestrator
+- During growth cycles, the system now considers using onboard AIs when relevant
+- Self-Development Directives are active in the Core Genome
+- The system is beginning to develop external AI integration capabilities as it grows
 
-**The system now has internal instructions for developing new tools and leveraging existing system AIs.**
+**This moves the vision of autonomous, efficient capability growth forward.**
 
-*Next: Integrate SystemAICell into the main loop and add stage-gating.*
+*Next recommended: Add more intelligent decision-making in SystemAICell or expand stage-gating.*
