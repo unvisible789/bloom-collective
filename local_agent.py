@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (with per-step error handling)
+Bloom Collective - Local Agent (Improved plan processing)
 
-Added better error handling at the individual step level.
+Better handling of plan steps with clearer status tracking.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -65,38 +65,52 @@ class LocalAgent:
             # External AI
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
-                self._log("Consulting external AI...")
+                self._log("Using external AI...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # Process steps with per-step error handling
+            # Process plan steps
+            executed_steps = 0
+            failed_steps = 0
+
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
                     step_text = step.get("step", "") if isinstance(step, dict) else str(step)
                     step_lower = step_text.lower()
 
+                    step_result = {"step": step_text, "status": "pending"}
+
                     try:
                         if "list" in step_lower or "state" in step_lower:
                             self._log(f"Listing directory...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
-                            result["cycles"].append({"action": "file_system", "result": fs_result})
+                            step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         elif "read" in step_lower:
                             self._log(f"Reading file...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
-                            result["cycles"].append({"action": "file_system", "result": fs_result})
+                            step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         elif "write" in step_lower or "create" in step_lower:
                             self._log(f"Writing file...")
-                            fs_result = self._safe_call(self.file_system, "process", {"action": "write", "filename": "output.txt", "content": "Generated during: {goal}"})
-                            result["cycles"].append({"action": "file_system", "result": fs_result})
+                            fs_result = self._safe_call(self.file_system, "process", {"action": "write", "filename": "output.txt", "content": f"Generated for: {goal}"})
+                            step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         else:
-                            result["cycles"].append({"action": "step", "step": step_text, "status": "simulated"})
+                            step_result["status"] = "simulated"
+
+                        if step_result.get("status") in ["error", "failed"]:
+                            failed_steps += 1
+                        else:
+                            executed_steps += 1
 
                     except Exception as step_error:
-                        result["errors"].append(f"Step failed: {step_text} - {step_error}")
-                        result["cycles"].append({"action": "step", "step": step_text, "status": "failed", "error": str(step_error)})
+                        failed_steps += 1
+                        step_result["status"] = "error"
+                        step_result["error"] = str(step_error)
+                        result["errors"].append(f"Step error: {step_text} - {step_error}")
+
+                    result["cycles"].append({"action": "step", "result": step_result})
 
             # Verification
             self._log("Verifying outcome...")
@@ -106,14 +120,15 @@ class LocalAgent:
             # Summary
             result["summary"] = {
                 "total_cycles": len(result["cycles"]),
-                "error_count": len(result["errors"]),
+                "steps_executed": executed_steps,
+                "steps_failed": failed_steps,
                 "used_ai": use_ai,
                 "duration_seconds": (datetime.now() - start_time).total_seconds(),
             }
 
-            result["status"] = "completed" if len(result["errors"]) == 0 else "completed_with_errors"
+            result["status"] = "completed" if failed_steps == 0 else "completed_with_errors"
             result["completed_at"] = datetime.now().isoformat()
-            self._log("Goal execution finished.")
+            self._log(f"Finished. Executed: {executed_steps}, Failed: {failed_steps}")
 
         except Exception as e:
             result["status"] = "error"
@@ -138,5 +153,6 @@ if __name__ == "__main__":
     result = agent.execute_goal("List files and create output.txt")
     print("\n=== Execution Complete ===")
     print(f"Status: {result['status']}")
-    print(f"Errors: {result['summary'].get('error_count', 0)}")
+    print(f"Steps executed: {result['summary'].get('steps_executed', 0)}")
+    print(f"Steps failed: {result['summary'].get('steps_failed', 0)}")
     print(f"Duration: {result['summary'].get('duration_seconds', 0):.2f}s")
