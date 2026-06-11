@@ -183,7 +183,7 @@ class LocalAgent:
         ]
         return "\n".join(lines)
 
-    def save_history(self, filepath: str = "agent_history.json") -> bool:
+    def save_history(self, filepath: str = "agent_history.json") -> bool):
         try:
             with open(filepath, "w") as f:
                 json.dump(self.history, f, indent=2, default=str)
