@@ -118,10 +118,12 @@ class EnhancedOrchestrator:
             self._log(f"Unregistered cell: {cell_name}")
     
     def get_active_cells(self) -> List[BaseCell]:
-        """Get currently active cells"""
-        if self.epigenetic is None:
-            return list(self.cells.values())
-        return [cell for cell in self.cells.values() if cell.is_active]
+        """Get currently active cells.
+        Always respect cell.is_active (default True for compatibility with mocks
+        or cells without the attribute). This fixes test expectations where
+        is_active=False mocks should be filtered regardless of epigenetic.
+        """
+        return [cell for cell in self.cells.values() if getattr(cell, 'is_active', True)]
     
     def get_cell_health(self) -> Dict[str, Dict[str, Any]]:
         """Get health status of all cells"""
