@@ -31,4 +31,22 @@ Living record of the Bloom Collective's evolution.
 - Begin defining modular cell-like agents
 - Establish basic immune/check mechanisms for proposed changes
 
-*This growth step was guided by the human biology inspiration requested by the Human Steward.*
+---
+
+## 2026-06-11 - Phase 1 Complete: Core Genome Drafted
+
+- Created `CORE_GENOME.md` with initial non-negotiable invariants
+- Covered: Truth & Reality Orientation, Human Stewardship, Alignment & Coherence (E.A.T.), Bounded Self-Modification, Transparency & Auditability, Beneficial Orientation
+- Clearly separated Core Genome (highly protected) from Regulatory/Epigenetic Layer (more plastic)
+- Interpretation rules and evolution process for the Core Genome itself defined
+
+**This establishes the stable genetic foundation.**
+
+**Next logical steps in sequence:**
+1. Refine Core Genome through Steward review + Critic role
+2. Design Epigenetic/State Layer and persistent memory versioning
+3. Define first cell-like modular agents
+4. Establish developmental stages and basic immune/check mechanisms
+5. Upgrade self-improvement loop to use the new structures
+
+*Sequence structured according to biological inspiration and logical dependency (identity first, then regulation, then modularity, then protection + staged growth).*
