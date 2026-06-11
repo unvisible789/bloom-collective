@@ -2,15 +2,17 @@
 """
 Bloom Collective - Local Agent
 
-A modular local agent for planning and executing goals.
+A modular local agent for planning and executing goals using
+specialized cells.
 
-This agent coordinates specialized cells to:
-- Plan goals (PlanningCell)
-- Use external AI when beneficial (SystemAICell)
-- Perform file system operations (FileSystemCell)
-- Verify outcomes (VerificationCell)
-
-It maintains execution history and provides human-readable summaries.
+Features:
+- Structured planning with dependencies
+- Intelligent external AI usage
+- Safe file system operations
+- Outcome verification
+- Execution history with persistence
+- Human-readable summaries
+- Robust error handling
 """
 
 from datetime import datetime
@@ -53,7 +55,7 @@ class LocalAgent:
             func = getattr(cell, method, None)
             if callable(func):
                 return func(*args, **kwargs)
-            return {"status": "error", "message": f"Method {method} not found"}
+            return {"status": "error", "message": f"Method {method} not found on {type(cell).__name__}"} 
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
