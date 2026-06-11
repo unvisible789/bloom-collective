@@ -87,17 +87,26 @@ Living record of the Bloom Collective's evolution.
 
 - Added `MODULAR_AGENTS.md` with initial design
 - Biological mapping: Cells contain the full genome but express subsets based on epigenetic regulation
-- Defined core principles: Genome + Epigenetic awareness, local autonomy + global coherence, clear interfaces, composability, observability
-- Proposed initial `BaseCell` interface
-- First target cell types: ReflectionCell, MemoryCell, CriticCell, ProposalCell
-- Simple orchestrator pattern sketched
+- Defined core principles and proposed BaseCell interface
+- First target cell types identified
 
-**This begins the modularity phase.**
+---
 
-**Next steps in Phase 3:**
-- Implement `BaseCell` abstract class
-- Build first concrete cell (ReflectionCell)
-- Create basic orchestrator that routes to active cells based on epigenetic state
-- Demonstrate a multi-cell growth cycle
+## 2026-06-11 - Phase 3 Implementation Started
 
-*Sequence maintained: Identity → Regulatory layer → Modularity (now) → Protection + staged growth → Enhanced engine.*
+- Created `base_cell.py` — Abstract BaseCell class with common interface (process, get_state, communicate, is_active)
+- Created `reflection_cell.py` — First concrete cell
+  - Inherits from BaseCell
+  - Uses epigenetic state to modulate reflection_depth and precision
+  - Returns structured reflections
+  - Respects is_active flag from epigenetic layer
+- This is the first working modular cell in the system
+
+**Biological mapping realized:** The ReflectionCell now expresses its function differently based on the current epigenetic state, exactly as real cells do.
+
+**Next in Phase 3:**
+- Create MemoryCell and/or CriticCell
+- Build a simple Orchestrator that routes tasks to active cells
+- Demonstrate a full multi-cell growth cycle
+
+*Sequence maintained.*
