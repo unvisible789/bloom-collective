@@ -106,19 +106,18 @@ Living record of the Bloom Collective's evolution.
 
 ## 2026-06-11 - Phase 5: Enhanced Self-Improvement Engine (Completed to Foundation Level)
 
-- `advanced_growth_cycle.py` demonstrates a full multi-cell workflow:
-  - Reflection via ReflectionCell
-  - Memory storage via MemoryCell
-  - Critique / immune check via CriticCell
-  - Orchestration of active cells
-- The loop now uses modular cells + epigenetic modulation + basic alignment checking
+- `advanced_growth_cycle.py` demonstrates a full multi-cell workflow
 
 **Phase 5 complete at foundation level.**
 
 ---
 
-## Final Status
+## Latest Progress: Core Genome Enforcement + Full Integration
 
-All five phases now have working implementations and clear definitions. The project has a coherent, biologically-inspired architecture that can continue evolving through collaborative GitHub development.
+- Added `core_genome.py` with programmatic validation of proposals against Core Genome principles
+- Refactored `bloom_seed.py` to use the Orchestrator + multiple cells + Core Genome validation
+- The main growth cycle now properly leverages the modular architecture
 
-**The core sequence requested by the user is now finished.**
+**This significantly strengthens the integration between all layers.**
+
+*Next recommended focus: Further strengthen Core Genome enforcement, add tests, and improve memory capabilities.*
