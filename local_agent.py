@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Improved plan processing)
+Bloom Collective - Local Agent (with execution memory)
 
-Better handling of plan steps with clearer status tracking.
+Added basic memory of past goal executions.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -65,7 +65,7 @@ class LocalAgent:
             # External AI
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
-                self._log("Using external AI...")
+                self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
@@ -82,18 +82,18 @@ class LocalAgent:
 
                     try:
                         if "list" in step_lower or "state" in step_lower:
-                            self._log(f"Listing directory...")
+                            self._log("Listing directory...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
                             step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         elif "read" in step_lower:
-                            self._log(f"Reading file...")
+                            self._log("Reading file...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
                             step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         elif "write" in step_lower or "create" in step_lower:
-                            self._log(f"Writing file...")
-                            fs_result = self._safe_call(self.file_system, "process", {"action": "write", "filename": "output.txt", "content": f"Generated for: {goal}"})
+                            self._log("Writing file...")
+                            fs_result = self._safe_call(self.file_system, "process", {"action": "write", "filename": "output.txt", "content": f"Generated for goal: {goal}"})
                             step_result.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
 
                         else:
@@ -108,12 +108,11 @@ class LocalAgent:
                         failed_steps += 1
                         step_result["status"] = "error"
                         step_result["error"] = str(step_error)
-                        result["errors"].append(f"Step error: {step_text} - {step_error}")
 
                     result["cycles"].append({"action": "step", "result": step_result})
 
             # Verification
-            self._log("Verifying outcome...")
+            self._log("Verifying...")
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
 
@@ -128,7 +127,7 @@ class LocalAgent:
 
             result["status"] = "completed" if failed_steps == 0 else "completed_with_errors"
             result["completed_at"] = datetime.now().isoformat()
-            self._log(f"Finished. Executed: {executed_steps}, Failed: {failed_steps}")
+            self._log(f"Finished. Success: {executed_steps}, Failed: {failed_steps}")
 
         except Exception as e:
             result["status"] = "error"
@@ -147,12 +146,14 @@ class LocalAgent:
     def get_history(self) -> List[Dict[str, Any]]:
         return self.history
 
+    def get_last_result(self) -> Optional[Dict[str, Any]]:
+        return self.history[-1] if self.history else None
+
 
 if __name__ == "__main__":
     agent = LocalAgent(verbose=True)
-    result = agent.execute_goal("List files and create output.txt")
-    print("\n=== Execution Complete ===")
+    result = agent.execute_goal("List files and create a file")
+    print("\n=== Execution Summary ===")
     print(f"Status: {result['status']}")
-    print(f"Steps executed: {result['summary'].get('steps_executed', 0)}")
-    print(f"Steps failed: {result['summary'].get('steps_failed', 0)}")
+    print(f"Steps: {result['summary'].get('steps_executed', 0)} executed, {result['summary'].get('steps_failed', 0)} failed")
     print(f"Duration: {result['summary'].get('duration_seconds', 0):.2f}s")
