@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Epigenetic State (Fixed for MemoryCell activation)
+Bloom Collective - Epigenetic State (Fixed risk_tolerance bug)
 """
 
 import json
@@ -101,7 +101,8 @@ class EpigeneticState:
         elif new_stage == DevelopmentalStage.BLOOM:
             self.data["expression_profile"]["creativity"] = 0.65
             self.data["expression_profile"]["modularity"] = 0.70
-            self.data["risk_tolerance"] = 0.40
+            # BUGFIX: Changed from self.data["risk_tolerance"] to self.data["expression_profile"]["risk_tolerance"]
+            self.data["expression_profile"]["risk_tolerance"] = 0.40
 
         self._log_change(f"Stage transition: {old_stage} → {new_stage.value}")
         self.data["last_updated"] = datetime.now().isoformat()
