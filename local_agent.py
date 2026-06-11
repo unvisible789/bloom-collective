@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Improved decision logic)
+Bloom Collective - Local Agent (with human-readable summary)
 
-Better logic for deciding when to use different cells.
+Added a method to generate a clean, human-readable summary of execution.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -62,16 +62,14 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI decision (improved)
-            ai_keywords = ["code", "explain", "analyze", "review", "help with", "debug", "refactor"]
-            use_ai = any(word in goal.lower() for word in ai_keywords)
-
+            # External AI
+            use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # File system operations
+            # Process plan steps
             executed = 0
             failed = 0
 
@@ -153,13 +151,27 @@ class LocalAgent:
             return {}
         return self.history[-1].get("summary", {})
 
+    def get_last_human_summary(self) -> str:
+        if not self.history:
+            return "No executions yet."
+
+        last = self.history[-1]
+        summary = last.get("summary", {})
+
+        lines = [
+            f"Goal: {last.get('goal', 'Unknown')}",
+            f"Status: {last.get('status', 'Unknown')}",
+            f"Steps executed: {summary.get('steps_executed', 0)}",
+            f"Steps failed: {summary.get('steps_failed', 0)}",
+            f"Used external AI: {summary.get('used_ai', False)}",
+            f"Duration: {summary.get('duration_seconds', 0):.2f} seconds",
+        ]
+
+        return "\n".join(lines)
+
 
 if __name__ == "__main__":
     agent = LocalAgent(verbose=True)
-    result = agent.execute_goal("Analyze the code and create a summary")
-    print("\n=== Execution Complete ===")
-    print(f"Status: {result['status']}")
-    summary = result.get("summary", {})
-    print(f"Steps: {summary.get('steps_executed', 0)} executed, {summary.get('steps_failed', 0)} failed")
-    print(f"Used AI: {summary.get('used_ai', False)}")
-    print(f"Duration: {summary.get('duration_seconds', 0):.2f}s")
+    result = agent.execute_goal("List files and create a summary file")
+    print("\n=== Human Readable Summary ===")
+    print(agent.get_last_human_summary())
