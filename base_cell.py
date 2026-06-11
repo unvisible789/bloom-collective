@@ -311,11 +311,11 @@ class BaseCell(ABC):
         """
         prefix = f"[{self.name}]"
         if level == "error":
-            print(f"❌ {prefix} {message}")
+            print(f"[ERROR] {prefix} {message}")
         elif level == "warning":
-            print(f"⚠️  {prefix} {message}")
+            print(f"[WARN] {prefix} {message}")
         else:
-            print(f"ℹ️  {prefix} {message}")
+            print(f"[INFO] {prefix} {message}")
     
     def __repr__(self):
         return f"{self.name}(active={self.is_active}, status={self._metadata['status']})"

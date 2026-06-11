@@ -48,11 +48,11 @@ class BloomSeed:
         self.current_focus = "Expanding capabilities and collaboration."
         print(f"Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}\n")
 
-    def run_growth_cycle(self):
+    def run_growth_cycle(self, observation=None):
         self.growth_cycles += 1
         print(f"\n--- Cycle {self.growth_cycles} ---")
 
-        observation = self.current_focus
+        observation = observation or self.current_focus
 
         if self.orchestrator:
             # Reflection

@@ -315,7 +315,9 @@ class EnhancedOrchestrator:
     # ==================== Logging & Diagnostics ====================
     
     def _log(self, message: str, level: str = "info"):
-        """Log orchestrator message"""
+        """
+        Log orchestrator message
+        """
         entry = {
             'timestamp': datetime.now().isoformat(),
             'level': level,
@@ -323,9 +325,9 @@ class EnhancedOrchestrator:
         }
         self.log_entries.append(entry)
         if level == "error":
-            print(f"❌ [Orchestrator] {message}")
+            print(f"[ERROR] [Orchestrator] {message}")
         else:
-            print(f"ℹ️  [Orchestrator] {message}")
+            print(f"[INFO] [Orchestrator] {message}")
     
     def get_diagnostics(self) -> Dict[str, Any]:
         """Get system diagnostics"""

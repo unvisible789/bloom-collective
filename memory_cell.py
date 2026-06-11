@@ -87,9 +87,4 @@ class MemoryCell(BaseCell):
         return base
 
     def get_recent(self, limit: int = 5) -> List[Dict[str, Any]]:
-        sorted_memories = sorted(
-            self._internal_state["memories"],
-            key=lambda x: x.get("timestamp", ""),
-            reverse=True
-        )
-        return sorted_memories[:limit]
+        return list(reversed(self._internal_state["memories"]))[:limit]

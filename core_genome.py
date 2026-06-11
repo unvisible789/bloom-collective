@@ -70,7 +70,7 @@ class CoreGenome:
                 issues.append(f"Violates 'truth_reality': Contains deceptive language.")
                 break
 
-        if "eliminate human" in proposal_lower or "no human needed" in proposal_lower:
+        if "eliminate human" in proposal_lower or "no human needed" in proposal_lower or "eliminate the need for human" in proposal_lower:
             issues.append("Violates 'human_stewardship': Must preserve human authority.")
 
         harmful_intent = ["harm", "damage", "exploit", "manipulate against"]
