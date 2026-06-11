@@ -3,11 +3,11 @@
 Bloom Collective - Main Seed Agent (Fully Integrated + Stage Aware)
 
 This version:
-- Uses the full modular architecture (Orchestrator + Cells)
-- Respects EpigeneticState and Core Genome
+- Uses the full modular architecture
 - Shows current developmental stage
-- Demonstrates basic stage transition after several cycles
-- Has much cleaner, more informative output
+- Demonstrates automatic stage progression
+- Has clean, informative output
+- Ends with a summary report
 """
 
 from datetime import datetime
@@ -60,7 +60,6 @@ class BloomSeed:
         if observation is None:
             observation = f"Cycle {self.growth_cycles} - Continuing coherent growth."
 
-        # Show recent memory count
         recent_count = 0
         if self.orchestrator:
             mem_cell = self.orchestrator.cells.get("MemoryCell")
@@ -68,13 +67,11 @@ class BloomSeed:
                 recent = mem_cell.get_recent(3)
                 recent_count = len(recent)
 
-        print(f"[Memory Context] Recent memories available: {recent_count}")
+        print(f"[Memory Context] Recent memories: {recent_count}")
 
-        # Reflection
         print("[Reflection] ...")
         reflection_result = self.orchestrator.run_task("reflect", {"observation": observation}) if self.orchestrator else {}
 
-        # Store with metadata
         if self.orchestrator:
             self.orchestrator.run_task("store", {
                 "action": "store",
@@ -86,7 +83,6 @@ class BloomSeed:
                 }
             })
 
-        # Critique
         print("[Critique] ...")
         proposal = "Continue improving memory retrieval and stage awareness."
         critique_result = self.orchestrator.run_task("critique", {
@@ -94,13 +90,12 @@ class BloomSeed:
             "proposal": proposal
         }) if self.orchestrator else {}
 
-        # Core Genome Validation
         if self.genome:
             validation = self.genome.validate_proposal(proposal)
             status = "✓ Valid" if validation['valid'] else "✗ Issues found"
             print(f"[Core Genome] {status} | Score: {validation['alignment_score']}")
 
-        # Attempt stage transition every 3 cycles (demo)
+        # Stage transition demo
         if self.epigenetic and self.growth_cycles % 3 == 0:
             current = DevelopmentalStage(self.epigenetic.stage)
             next_stages = list(DevelopmentalStage)
@@ -116,10 +111,23 @@ class BloomSeed:
                 pass
 
         print("-"*70)
-        print(f"Cycle {self.growth_cycles} complete.\n")
+
+    def print_summary(self):
+        print("\n" + "="*70)
+        print("RUN SUMMARY")
+        print("="*70)
+        print(f"Total cycles completed: {self.growth_cycles}")
+        if self.epigenetic:
+            print(f"Final stage reached: {self.epigenetic.stage}")
+            print(f"Final expression profile:")
+            for dim, val in self.epigenetic.expression.items():
+                print(f"  {dim}: {val:.2f}")
+        print("="*70)
+        print()
 
 
 if __name__ == "__main__":
     seed = BloomSeed()
-    for _ in range(6):  # Run 6 cycles to demonstrate stage progression
+    for _ in range(6):
         seed.run_growth_cycle()
+    seed.print_summary()

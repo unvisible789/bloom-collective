@@ -99,27 +99,25 @@ Living record of the Bloom Collective's evolution.
 - Basic stage transition logic implemented in `epigenetic_state.py`
 - `bloom_seed.py` now demonstrates automatic stage progression every 3 cycles
 - Expression profile and active modules update on transition
+- Added dedicated tests for stage transitions
 
-**Stage transitions are now live in the main growth loop.**
+**Stage transitions are now tested and integrated into the main loop.**
 
 ---
 
 ## 2026-06-11 - Phase 5: Enhanced Self-Improvement Engine (Strengthened)
 
-- `bloom_seed.py` is now the primary, well-integrated entry point
-- Full loop: Reflection → Memory (with metadata) → Critique → Core Genome validation → Stage awareness
-- Significantly improved console output and readability
+- `bloom_seed.py` includes end-of-run summary
+- Full integrated loop with memory context and Core Genome validation
 
-**Phase 5 is now more polished and demonstrable.**
+**Significant progress on integration and usability.**
 
 ---
 
-## Latest: Major Integration & UX Improvements
+## Latest: Tests + Polish
 
-- `bloom_seed.py` fully wired with stage transitions, better output formatting, and memory context
-- Running 6 cycles now visibly demonstrates stage progression (Seed → Sprout, etc.)
-- Project is becoming much more coherent and impressive when run
+- Added `tests/test_stage_transitions.py`
+- Improved `bloom_seed.py` with end-of-run summary report
+- Project is becoming more robust and user-friendly when run
 
-**This is a significant step toward a more launchable and understandable system.**
-
-*Next: Expand tests for stage logic or further improve memory capabilities.*
+*Next recommended: Further expand tests or add more stage-aware behaviors.*
