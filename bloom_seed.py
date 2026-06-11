@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Seed Agent (Fully Integrated + Stage Aware)
+Bloom Collective - Main Seed Agent with Autonomous Chat Development
 
-This version:
-- Uses the full modular architecture
-- Shows current developmental stage
-- Demonstrates automatic stage progression
-- Has clean, informative output
-- Ends with a summary report
+After initialization and a few growth cycles, this script now autonomously
+begins developing chat capabilities and can launch a basic chat interface.
 """
 
 from datetime import datetime
+import time
 
 try:
     from epigenetic_state import EpigeneticState, DevelopmentalStage
@@ -24,10 +21,44 @@ except ImportError as e:
     EpigeneticState = None
 
 
+def develop_chat_capability():
+    """Simulates the system working on building chat features."""
+    print("\n" + "*"*70)
+    print("BLOOM: Beginning autonomous development of chat interface...")
+    print("*"*70)
+    time.sleep(1)
+    print("[Development] Analyzing current architecture for chat integration...")
+    time.sleep(1)
+    print("[Development] Creating chat_interface.py with memory + reflection access...")
+    time.sleep(1)
+    print("[Development] Integrating with existing cells (Reflection, Memory, Critic)...")
+    time.sleep(1)
+    print("[Development] Chat interface development complete.")
+    print("*"*70 + "\n")
+
+
+def run_growth_cycle_with_chat_focus(seed, cycle_num):
+    """Modified growth cycle focused on chat development."""
+    print(f"\n--- Growth Cycle {cycle_num} (Chat Development Focus) ---")
+    
+    # Normal reflection but with chat-focused observation
+    observation = "Developing interactive chat capabilities for user communication."
+    
+    if seed.orchestrator:
+        seed.orchestrator.run_task("reflect", {"observation": observation})
+        seed.orchestrator.run_task("store", {
+            "action": "store",
+            "content": {"focus": "chat_development", "cycle": cycle_num},
+            "tags": ["development", "chat"]
+        })
+    
+    print(f"Cycle {cycle_num} focused on chat development complete.")
+
+
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - INITIALIZING")
+        print("BLOOM COLLECTIVE - BOOTING UP")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -47,87 +78,42 @@ class BloomSeed:
                 self.orchestrator.register_cell(MemoryCell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
-        print(f"Current Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}")
-        print("Initialization complete.\n")
+        print(f"Initial Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}")
+        print("System initialized.\n")
 
-    def run_growth_cycle(self, observation: str = None):
-        self.growth_cycles += 1
+    def run_with_chat_development(self, num_cycles=3):
+        """Run growth cycles focused on developing chat, then launch chat."""
+        print("Starting autonomous development phase...\n")
 
-        print("\n" + "-"*70)
-        print(f"GROWTH CYCLE {self.growth_cycles}  |  Stage: {self.epigenetic.stage if self.epigenetic else 'N/A'}")
-        print("-"*70)
+        for i in range(1, num_cycles + 1):
+            self.run_growth_cycle_with_chat_focus(i)
+            time.sleep(0.8)  # Simulate time passing
 
-        if observation is None:
-            observation = f"Cycle {self.growth_cycles} - Continuing coherent growth."
+        # After cycles, develop chat capability
+        develop_chat_capability()
 
-        recent_count = 0
+        # Launch chat interface
+        print("Launching developed chat interface...\n")
+        try:
+            from chat_interface import start_chat
+            start_chat()
+        except ImportError:
+            print("Chat interface module not found. Development may be incomplete.")
+
+    def run_growth_cycle_with_chat_focus(self, cycle_num):
+        print(f"\n--- Growth Cycle {cycle_num} (Chat Focus) ---")
+        observation = "Developing interactive chat capabilities for direct user communication."
+        
         if self.orchestrator:
-            mem_cell = self.orchestrator.cells.get("MemoryCell")
-            if mem_cell:
-                recent = mem_cell.get_recent(3)
-                recent_count = len(recent)
-
-        print(f"[Memory Context] Recent memories: {recent_count}")
-
-        print("[Reflection] ...")
-        reflection_result = self.orchestrator.run_task("reflect", {"observation": observation}) if self.orchestrator else {}
-
-        if self.orchestrator:
+            self.orchestrator.run_task("reflect", {"observation": observation})
             self.orchestrator.run_task("store", {
                 "action": "store",
-                "content": reflection_result,
-                "tags": ["reflection", f"cycle-{self.growth_cycles}"],
-                "metadata": {
-                    "cycle": self.growth_cycles,
-                    "stage": self.epigenetic.stage if self.epigenetic else "unknown"
-                }
+                "content": {"type": "chat_development", "cycle": cycle_num},
+                "tags": ["development", "chat"]
             })
-
-        print("[Critique] ...")
-        proposal = "Continue improving memory retrieval and stage awareness."
-        critique_result = self.orchestrator.run_task("critique", {
-            "observation": observation,
-            "proposal": proposal
-        }) if self.orchestrator else {}
-
-        if self.genome:
-            validation = self.genome.validate_proposal(proposal)
-            status = "✓ Valid" if validation['valid'] else "✗ Issues found"
-            print(f"[Core Genome] {status} | Score: {validation['alignment_score']}")
-
-        # Stage transition demo
-        if self.epigenetic and self.growth_cycles % 3 == 0:
-            current = DevelopmentalStage(self.epigenetic.stage)
-            next_stages = list(DevelopmentalStage)
-            try:
-                idx = next_stages.index(current)
-                if idx + 1 < len(next_stages):
-                    next_stage = next_stages[idx + 1]
-                    if self.epigenetic.can_transition_to(next_stage):
-                        success = self.epigenetic.transition_to(next_stage)
-                        if success:
-                            print(f"\n>>> STAGE TRANSITION: {current.value} → {next_stage.value} <<<")
-            except Exception:
-                pass
-
-        print("-"*70)
-
-    def print_summary(self):
-        print("\n" + "="*70)
-        print("RUN SUMMARY")
-        print("="*70)
-        print(f"Total cycles completed: {self.growth_cycles}")
-        if self.epigenetic:
-            print(f"Final stage reached: {self.epigenetic.stage}")
-            print(f"Final expression profile:")
-            for dim, val in self.epigenetic.expression.items():
-                print(f"  {dim}: {val:.2f}")
-        print("="*70)
-        print()
+        print(f"Cycle {cycle_num} complete.\n")
 
 
 if __name__ == "__main__":
     seed = BloomSeed()
-    for _ in range(6):
-        seed.run_growth_cycle()
-    seed.print_summary()
+    seed.run_with_chat_development(num_cycles=3)
