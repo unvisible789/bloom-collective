@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Enhanced with SystemAI integration)
+Bloom Collective - Local Agent (Further Enhanced)
 
-Now attempts to use SystemAICell for goals that benefit from external AI assistance.
+Added better execution tracking, result history, and structure.
 """
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 try:
@@ -39,8 +40,10 @@ class LocalAgent:
             return {"status": "error", "message": str(e)}
 
     def execute_goal(self, goal: str) -> Dict[str, Any]:
+        start_time = datetime.now()
         result = {
             "goal": goal,
+            "started_at": start_time.isoformat(),
             "status": "started",
             "cycles": [],
             "errors": [],
@@ -51,14 +54,13 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # Decide if we should use external AI assistance
+            # Decide whether to use external AI
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
-
             if use_ai and self.system_ai:
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # File system operations
+            # Execute file system steps when relevant
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
                     step_text = step.get("step", "") if isinstance(step, dict) else str(step)
@@ -76,6 +78,7 @@ class LocalAgent:
             result["cycles"].append({"action": "verify", "result": verify_result})
 
             result["status"] = "completed"
+            result["completed_at"] = datetime.now().isoformat()
 
         except Exception as e:
             result["status"] = "error"
@@ -90,8 +93,11 @@ class LocalAgent:
             return result["plan"].get("steps", [])
         return []
 
+    def get_history(self) -> List[Dict[str, Any]]:
+        return self.history
+
 
 if __name__ == "__main__":
     agent = LocalAgent()
-    result = agent.execute_goal("Explain the current code structure")
+    result = agent.execute_goal("List files and read README.md")
     print(result)
