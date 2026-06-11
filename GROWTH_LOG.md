@@ -112,14 +112,13 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Strengthened Core Genome Validation
+## Latest: Expanded Test Coverage
 
-- Significantly improved `core_genome.py`:
-  - Added more validation rules (deception, harmful intent, transparency warnings)
-  - Better handling of invalid input
-  - Clearer issue messages
-  - Stricter pattern matching for dangerous proposals
+- Added `tests/test_orchestrator.py`
+- Added `tests/test_memory_improved.py`
+- Added `tests/test_integration.py`
+- Tests now cover orchestrator coordination, improved MemoryCell features (ID-based retrieval, tagging, get_recent), and full BloomSeed integration
 
-**Core Genome enforcement is now more robust.**
+**Test coverage has been meaningfully expanded.**
 
-*Next recommended: Expand tests or add stage transition logic.*
+*Next recommended: Continue expanding tests or implement basic stage transition logic.*
