@@ -3,16 +3,16 @@
 Bloom Collective - Local Agent
 
 A modular local agent for planning and executing goals using
-specialized cells.
+specialized cells (Planning, Verification, SystemAI, FileSystem).
 
-Features:
-- Structured planning with dependencies
-- Intelligent external AI usage
+Key Features:
+- Structured goal planning with dependencies and priorities
+- Intelligent external AI delegation when beneficial
 - Safe file system operations
 - Outcome verification
-- Execution history with persistence
+- Execution history with JSON persistence
 - Human-readable summaries
-- Robust error handling
+- Robust error handling at every level
 """
 
 from datetime import datetime
@@ -77,7 +77,7 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI
+            # External AI (if goal seems to benefit from it)
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with", "debug", "refactor"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
