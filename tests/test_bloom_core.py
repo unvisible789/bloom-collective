@@ -10,12 +10,12 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-# Import components (adjust paths as needed)
+# Import components (adjusted for actual module names)
 try:
     from core_genome import CoreGenome
     from epigenetic_state import EpigeneticState, DevelopmentalStage
-    from orchestrator_enhanced import EnhancedOrchestrator, Task, TaskStatus
-    from base_cell_enhanced import BaseCell
+    from orchestrator import EnhancedOrchestrator, Task, TaskStatus
+    from base_cell import BaseCell
 except ImportError as e:
     print(f"Import error: {e}")
 

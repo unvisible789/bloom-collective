@@ -24,6 +24,11 @@ class PlanningCell(BaseCell):
             "last_plan": None,
         }
 
+    @property
+    def supported_tasks(self) -> List[str]:
+        """Declare supported task types for orchestrator routing."""
+        return ["planning"]
+
     def create_plan(self, goal: str, max_steps: int = 6) -> Dict[str, Any]:
         steps = []
         dependencies = {}

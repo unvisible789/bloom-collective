@@ -6,7 +6,7 @@ Basic cell for self-verification of actions and outcomes.
 Helps close the gap in self-verifying execution.
 """
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 try:
     from base_cell import BaseCell
@@ -27,6 +27,11 @@ class VerificationCell(BaseCell):
             "verifications_performed": 0,
             "last_verification": None,
         }
+
+    @property
+    def supported_tasks(self) -> List[str]:
+        """Declare supported task types for orchestrator routing ("verification" task type)."""
+        return ["verification"]
 
     def verify_action(self, action: str, expected_outcome: str = "") -> Dict[str, Any]:
         """

@@ -68,19 +68,40 @@ class EpigeneticState:
     def is_module_active(self, module: str) -> bool:
         return module in self.data.get("active_modules", [])
 
-    def get_active_modules(self) -> list:
-        return self.data.get("active_modules", []).copy()
-
-    def can_transition_to(self, new_stage: DevelopmentalStage) -> bool:
+    def transition_decision(self, new_stage: DevelopmentalStage) -> dict:
+        """
+        Explicit transition decision with reason.
+        Returns structured decision instead of just bool, for better debugging and logging.
+        """
         current = DevelopmentalStage(self.stage)
         order = list(DevelopmentalStage)
         current_index = order.index(current)
         new_index = order.index(new_stage)
-        return new_index == current_index + 1
+        allowed = new_index == current_index + 1
+        if allowed:
+            reason = f"Valid forward transition from {current.value} to {new_stage.value}"
+        elif new_index == current_index:
+            reason = f"Same stage transition blocked: already at {current.value}"
+        elif new_index < current_index:
+            reason = f"Regression blocked: cannot go back from {current.value} to {new_stage.value}"
+        else:
+            reason = f"Stage skip blocked: cannot jump from {current.value} to {new_stage.value} (must progress sequentially)"
+        return {
+            "allowed": allowed,
+            "reason": reason,
+            "current_stage": current.value,
+            "requested_stage": new_stage.value
+        }
+
+    def can_transition_to(self, new_stage: DevelopmentalStage) -> bool:
+        """Backward compatible bool check using explicit decision."""
+        decision = self.transition_decision(new_stage)
+        return decision["allowed"]
 
     def transition_to(self, new_stage: DevelopmentalStage) -> bool:
-        if not self.can_transition_to(new_stage):
-            self._log_change(f"Blocked transition attempt: {self.stage} → {new_stage.value}")
+        decision = self.transition_decision(new_stage)
+        if not decision["allowed"]:
+            self._log_change(f"Blocked transition attempt: {decision['reason']}")
             return False
 
         old_stage = self.stage
