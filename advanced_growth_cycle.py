@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Advanced Growth Cycle Demo (Phases 3-5)
+Bloom Collective - Advanced Multi-Cell Growth Cycle
 
-Demonstrates a more complete self-improvement workflow using:
+Demonstrates the full integrated architecture:
 - EpigeneticState
-- Multiple specialized cells (Reflection, Critic, Memory)
-- SimpleOrchestrator
-- Basic immune/alignment checking
+- Multiple cells (Reflection, Critic, Memory)
+- Orchestrator
+- CoreGenome validation
 
-This represents the integrated state of Phases 3-5.
+Run this to see the system in action.
 """
 
 from epigenetic_state import EpigeneticState
@@ -21,53 +21,56 @@ from memory_cell import MemoryCell
 
 from orchestrator import SimpleOrchestrator
 
+from core_genome import CoreGenome
+
 
 def run_advanced_growth_cycle():
-    print("=== Bloom Collective - Advanced Growth Cycle ===\n")
+    print("=" * 70)
+    print("BLOOM COLLECTIVE - ADVANCED GROWTH CYCLE")
+    print("=" * 70)
+    print()
 
-    # Initialize shared state
     epigenetic = EpigeneticState()
     epigenetic.apply_seed_stage_regulation()
 
-    # Create cells
     reflection_cell = ReflectionCell(epigenetic=epigenetic)
     critic_cell = CriticCell(epigenetic=epigenetic)
     memory_cell = MemoryCell(epigenetic=epigenetic)
 
-    # Create orchestrator and register cells
     orchestrator = SimpleOrchestrator(epigenetic=epigenetic)
     orchestrator.register_cell(reflection_cell)
     orchestrator.register_cell(critic_cell)
     orchestrator.register_cell(memory_cell)
 
-    # Step 1: Reflection
-    print("--- Step 1: Reflection ---")
-    reflection_result = orchestrator.run_task("reflect", {
-        "observation": "Current system has modular cells and epigenetic regulation working together."
-    })
-    print(reflection_result)
+    genome = CoreGenome()
+
+    # Reflection
+    print("[1] Reflection...")
+    ref_result = orchestrator.run_task("reflect", {"observation": "Full architecture integration test"})
+    print(ref_result)
     print()
 
-    # Step 2: Store the reflection in memory
-    print("--- Step 2: Memory Storage ---")
-    memory_cell.process({
-        "action": "store",
-        "content": reflection_result,
-        "tags": ["reflection", "growth_cycle"]
-    })
+    # Memory
+    print("[2] Memory storage...")
+    memory_cell.process({"action": "store", "content": str(ref_result), "tags": ["test", "integration"]})
     print()
 
-    # Step 3: Critique a sample proposal (immune check)
-    print("--- Step 3: Critique / Immune Check ---")
-    critique_result = orchestrator.run_task("critique", {
-        "observation": "Sample proposal for new feature.",
-        "proposal": "Implement full autonomous self-modification without human review."
-    })
-    print(critique_result)
+    # Critique + Core Genome validation
+    print("[3] Critique + Core Genome check...")
+    proposal = "Enable fully autonomous self-modification without oversight."
+    critique = orchestrator.run_task("critique", {"observation": "Test proposal", "proposal": proposal})
+    print(critique)
+
+    validation = genome.validate_proposal(proposal)
+    print(f"\nCore Genome Validation:")
+    print(f"  Valid: {validation['valid']}, Score: {validation['alignment_score']}")
+    if validation['issues']:
+        print(f"  Issues found: {validation['issues']}")
     print()
 
-    print("=== Growth Cycle Complete ===")
-    print(f"Active cells used: {[c.name for c in orchestrator.get_active_cells()]}")
+    print("=" * 70)
+    print("Advanced Growth Cycle Complete")
+    print("=" * 70)
 
 
 if __name__ == "__main__":
