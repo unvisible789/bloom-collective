@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (with basic logging)
+Bloom Collective - Local Agent (with execution summary)
 
-Added simple print logging for observability during execution.
+Added a simple summary of what happened during goal execution.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -54,22 +54,22 @@ class LocalAgent:
             "status": "started",
             "cycles": [],
             "errors": [],
+            "summary": {},
         }
 
         try:
             # Planning
-            self._log("Creating plan...")
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # Decide whether to use external AI
+            # External AI if needed
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
             if use_ai and self.system_ai:
-                self._log("Using external AI assistance...")
+                self._log("Consulting external AI...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # File system operations
+            # File system actions
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
                     step_text = step.get("step", "") if isinstance(step, dict) else str(step)
@@ -89,14 +89,22 @@ class LocalAgent:
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
 
+            # Build summary
+            result["summary"] = {
+                "total_cycles": len(result["cycles"]),
+                "had_errors": len(result["errors"]) > 0,
+                "used_ai": use_ai,
+                "duration_seconds": (datetime.now() - start_time).total_seconds(),
+            }
+
             result["status"] = "completed"
             result["completed_at"] = datetime.now().isoformat()
-            self._log("Goal completed successfully.")
+            self._log("Goal completed.")
 
         except Exception as e:
             result["status"] = "error"
             result["errors"].append(str(e))
-            self._log(f"Error occurred: {e}")
+            self._log(f"Error: {e}")
 
         self.history.append(result)
         return result
@@ -114,4 +122,8 @@ class LocalAgent:
 if __name__ == "__main__":
     agent = LocalAgent(verbose=True)
     result = agent.execute_goal("List files and read README.md")
-    print("\nFinal result:", result["status"])
+    print("\n=== Execution Summary ===")
+    print(f"Status: {result['status']}")
+    print(f"Cycles: {result['summary'].get('total_cycles', 0)}")
+    print(f"Used AI: {result['summary'].get('used_ai', False)}")
+    print(f"Duration: {result['summary'].get('duration_seconds', 0):.2f}s")
