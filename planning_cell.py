@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - PlanningCell (Enhanced)
+Bloom Collective - PlanningCell (Improved)
 
-Improved planning with basic dependency tracking and prioritization.
-Supports better long-horizon thinking.
+Enhanced with:
+- Step dependencies
+- Priority levels
+- Better structured output
+- Support for alternatives
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -26,56 +30,56 @@ class PlanningCell(BaseCell):
 
     @property
     def supported_tasks(self) -> List[str]:
-        """Declare supported task types for orchestrator routing."""
-        return ["planning"]
+        return ["planning", "plan", "create_plan"]
 
     def create_plan(self, goal: str, max_steps: int = 6) -> Dict[str, Any]:
         steps = []
-        dependencies = {}
-
         goal_lower = goal.lower()
 
+        # Basic planning logic with dependencies and priorities
         if "file" in goal_lower or "computer" in goal_lower:
             steps = [
-                {"step": "Understand current file system state", "priority": 1},
-                {"step": "Identify needed file operations", "priority": 2},
-                {"step": "Execute file operations safely", "priority": 3, "depends_on": [1]},
-                {"step": "Verify results", "priority": 4, "depends_on": [3]}
+                {"id": 1, "step": "Understand current file system state", "priority": 1, "depends_on": []},
+                {"id": 2, "step": "Identify needed file operations", "priority": 2, "depends_on": [1]},
+                {"id": 3, "step": "Execute file operations safely", "priority": 3, "depends_on": [2]},
+                {"id": 4, "step": "Verify results", "priority": 4, "depends_on": [3]},
             ]
         elif "code" in goal_lower or "develop" in goal_lower:
             steps = [
-                {"step": "Clarify the coding goal", "priority": 1},
-                {"step": "Check existing code structure", "priority": 2},
-                {"step": "Propose implementation approach", "priority": 3, "depends_on": [1, 2]},
-                {"step": "Delegate to coding assistant if appropriate", "priority": 4, "depends_on": [3]},
-                {"step": "Test and verify", "priority": 5, "depends_on": [4]}
+                {"id": 1, "step": "Clarify the coding goal", "priority": 1, "depends_on": []},
+                {"id": 2, "step": "Check existing code structure", "priority": 2, "depends_on": [1]},
+                {"id": 3, "step": "Propose implementation approach", "priority": 3, "depends_on": [1, 2]},
+                {"id": 4, "step": "Delegate to coding assistant if appropriate", "priority": 4, "depends_on": [3]},
+                {"id": 5, "step": "Test and verify", "priority": 5, "depends_on": [4]},
             ]
         else:
             steps = [
-                {"step": "Clarify the goal", "priority": 1},
-                {"step": "Gather relevant information", "priority": 2, "depends_on": [1]},
-                {"step": "Break into smaller tasks", "priority": 3, "depends_on": [2]},
-                {"step": "Execute tasks in order", "priority": 4, "depends_on": [3]},
-                {"step": "Review outcome", "priority": 5, "depends_on": [4]}
+                {"id": 1, "step": "Clarify the goal", "priority": 1, "depends_on": []},
+                {"id": 2, "step": "Gather relevant information", "priority": 2, "depends_on": [1]},
+                {"id": 3, "step": "Break into smaller tasks", "priority": 3, "depends_on": [2]},
+                {"id": 4, "step": "Execute tasks in order", "priority": 4, "depends_on": [3]},
+                {"id": 5, "step": "Review outcome", "priority": 5, "depends_on": [4]},
             ]
 
+        # Limit number of steps
         steps = steps[:max_steps]
 
         plan = {
             "goal": goal,
             "steps": steps,
             "created_at": datetime.now().isoformat(),
-            "status": "proposed"
+            "status": "proposed",
+            "total_steps": len(steps),
         }
 
         self._internal_state["plans_created"] += 1
         self._internal_state["last_plan"] = plan
 
-        self.log(f"Created enhanced plan with {len(steps)} steps for: {goal}")
+        self.log(f"Created plan with {len(steps)} steps for: {goal}")
 
         return {
             "status": "success",
-            "plan": plan
+            "plan": plan,
         }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
