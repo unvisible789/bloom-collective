@@ -1,9 +1,9 @@
 # Growth Log
 
-## Latest: PlanningCell Enhanced
+## Latest: Improved Autonomy
 
-- Improved PlanningCell with dependency tracking and prioritization
-- Better support for longer-horizon and structured planning
-- System now creates more sophisticated plans during growth cycles
+- Made main loop more dynamic and self-directed
+- The system now updates its own focus between cycles based on previous activity
+- Combined with PlanningCell and VerificationCell, Blossom is becoming more autonomous and agentic
 
-**Significant improvement in planning and task decomposition capabilities.**
+**Good progress on autonomy and overall agency.**

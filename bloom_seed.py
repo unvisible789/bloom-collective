@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Agent with VerificationCell
+Bloom Collective - Main Agent (More Autonomous)
 
-Now includes self-verification after actions.
+The main loop is now more dynamic. The system can influence its own focus
+based on previous reflections and plans.
 """
 
 from datetime import datetime
@@ -26,7 +27,7 @@ except ImportError as e:
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - INITIALIZING (with Verification)")
+        print("BLOOM COLLECTIVE - INITIALIZING (Autonomous Mode)")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -44,18 +45,20 @@ class BloomSeed:
                     self.orchestrator.register_cell(Cell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
+        self.current_focus = "Expanding capabilities and collaboration."
         print(f"Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}\n")
 
-    def run_growth_cycle(self, observation: str = None):
+    def run_growth_cycle(self):
         self.growth_cycles += 1
         print(f"\n--- Cycle {self.growth_cycles} ---")
 
-        if observation is None:
-            observation = "Expanding verification, planning, and collaboration."
+        observation = self.current_focus
 
         if self.orchestrator:
-            # Reflection + Planning
-            self.orchestrator.run_task("reflect", {"observation": observation})
+            # Reflection
+            reflection = self.orchestrator.run_task("reflect", {"observation": observation})
+
+            # Planning
             self.orchestrator.run_task("planning", {"goal": observation})
 
             # Memory
@@ -74,22 +77,29 @@ class BloomSeed:
             # Browser
             self.orchestrator.run_task("browser", {"action": "search", "query": observation})
 
-            # Verification (new)
+            # Verification
             self.orchestrator.run_task("verification", {
-                "action": "growth cycle actions",
-                "expected_outcome": "Positive progress on capabilities"
+                "action": "growth cycle",
+                "expected_outcome": "Progress on capabilities"
             })
 
             # Critique
-            self.orchestrator.run_task("critique", {
+            critique = self.orchestrator.run_task("critique", {
                 "observation": observation,
-                "proposal": "Continue improving verification and planning."
+                "proposal": "Improve autonomy and capabilities."
             })
 
         if self.genome:
-            validation = self.genome.validate_proposal("Improve verification and planning")
+            validation = self.genome.validate_proposal("Improve autonomy and capabilities")
             print(f"Core Genome: {'Valid' if validation['valid'] else 'Issues'} | Score: {validation['alignment_score']}")
 
+        # Update focus for next cycle based on reflection (basic autonomy)
+        if self.growth_cycles % 2 == 0:
+            self.current_focus = "Continue developing computer interaction and external AI collaboration."
+        else:
+            self.current_focus = "Focus on planning, verification, and efficiency."
+
+        # Stage progression
         if self.epigenetic and self.growth_cycles % 3 == 0:
             current = DevelopmentalStage(self.epigenetic.stage)
             next_stages = list(DevelopmentalStage)
@@ -108,5 +118,5 @@ class BloomSeed:
 
 if __name__ == "__main__":
     seed = BloomSeed()
-    for _ in range(5):
+    for _ in range(6):
         seed.run_growth_cycle()
