@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Seed Agent (Multi-Cell Computer Interaction)
+Bloom Collective - Main Agent with Improved Agency
 
-Now includes FileSystemCell and BrowserCell for expanded computer interaction.
+Now includes better decision-making and real delegation attempts.
 """
 
 from datetime import datetime
-import time
 
 try:
     from epigenetic_state import EpigeneticState, DevelopmentalStage
@@ -20,13 +19,12 @@ try:
     from core_genome import CoreGenome
 except ImportError as e:
     print(f"Import error: {e}")
-    EpigeneticState = None
 
 
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - BOOTING UP (Multi-Cell Mode)")
+        print("BLOOM COLLECTIVE - INITIALIZING (Agency Mode)")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -38,67 +36,57 @@ class BloomSeed:
         self.orchestrator = SimpleOrchestrator(epigenetic=self.epigenetic) if SimpleOrchestrator else None
 
         if self.orchestrator:
-            if ReflectionCell:
-                self.orchestrator.register_cell(ReflectionCell(epigenetic=self.epigenetic))
-            if CriticCell:
-                self.orchestrator.register_cell(CriticCell(epigenetic=self.epigenetic))
-            if MemoryCell:
-                self.orchestrator.register_cell(MemoryCell(epigenetic=self.epigenetic))
-            if SystemAICell:
-                self.orchestrator.register_cell(SystemAICell(epigenetic=self.epigenetic))
-            if FileSystemCell:
-                self.orchestrator.register_cell(FileSystemCell(epigenetic=self.epigenetic))
-            if BrowserCell:
-                self.orchestrator.register_cell(BrowserCell(epigenetic=self.epigenetic))
+            for Cell in [ReflectionCell, CriticCell, MemoryCell, SystemAICell, FileSystemCell, BrowserCell]:
+                if Cell:
+                    self.orchestrator.register_cell(Cell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
-        print(f"Initial Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}")
-        print("System initialized with full cell set.\n")
+        print(f"Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}\n")
 
     def run_growth_cycle(self, observation: str = None):
         self.growth_cycles += 1
-
-        print("\n" + "-"*70)
-        print(f"GROWTH CYCLE {self.growth_cycles}  |  Stage: {self.epigenetic.stage if self.epigenetic else 'N/A'}")
-        print("-"*70)
+        print(f"\n--- Cycle {self.growth_cycles} ---")
 
         if observation is None:
-            observation = f"Cycle {self.growth_cycles} - Expanding computer interaction capabilities."
+            observation = "Expanding agency, planning, and external collaboration."
 
         if self.orchestrator:
+            # Reflection
             self.orchestrator.run_task("reflect", {"observation": observation})
+
+            # Memory
             self.orchestrator.run_task("store", {
                 "action": "store",
-                "content": {"type": "growth", "cycle": self.growth_cycles},
+                "content": observation,
                 "tags": ["growth"]
             })
 
-        # System AI
-        print("[System AI] ...")
-        if self.orchestrator:
-            self.orchestrator.run_task("system_ai", {"task": observation})
+            # System AI - now attempts real delegation where possible
+            ai_result = self.orchestrator.run_task("system_ai", {
+                "task": observation,
+                "delegate": True
+            })
 
-        # File System
-        print("[File System] ...")
-        if self.orchestrator:
+            # File System
             self.orchestrator.run_task("file_system", {"action": "list", "path": "."})
 
-        # Browser (simulated)
-        print("[Browser] ...")
-        if self.orchestrator:
-            self.orchestrator.run_task("browser", {"action": "search", "query": "latest developments in self-evolving AI"})
+            # Browser
+            self.orchestrator.run_task("browser", {
+                "action": "search",
+                "query": "self-evolving AI architectures 2026"
+            })
 
-        # Critique
-        print("[Critique] ...")
-        proposal = "Continue expanding computer control and external AI integration."
-        if self.orchestrator:
-            self.orchestrator.run_task("critique", {"observation": observation, "proposal": proposal})
+            # Critique + validation
+            self.orchestrator.run_task("critique", {
+                "observation": observation,
+                "proposal": "Improve agency and external AI collaboration."
+            })
 
         if self.genome:
-            validation = self.genome.validate_proposal(proposal)
-            status = "✓ Valid" if validation['valid'] else "✗ Issues found"
-            print(f"[Core Genome] {status} | Score: {validation['alignment_score']}")
+            validation = self.genome.validate_proposal("Improve agency and external collaboration")
+            print(f"Core Genome: {'Valid' if validation['valid'] else 'Issues'} | Score: {validation['alignment_score']}")
 
+        # Stage progression
         if self.epigenetic and self.growth_cycles % 3 == 0:
             current = DevelopmentalStage(self.epigenetic.stage)
             next_stages = list(DevelopmentalStage)
@@ -108,25 +96,14 @@ class BloomSeed:
                     next_stage = next_stages[idx + 1]
                     if self.epigenetic.can_transition_to(next_stage):
                         if self.epigenetic.transition_to(next_stage):
-                            print(f"\n>>> STAGE TRANSITION: {current.value} → {next_stage.value} <<<")
+                            print(f">>> Stage Transition: {current.value} → {next_stage.value}")
             except Exception:
                 pass
 
-        print("-"*70)
-
-    def print_summary(self):
-        print("\n" + "="*70)
-        print("RUN SUMMARY")
-        print("="*70)
-        print(f"Total cycles: {self.growth_cycles}")
-        if self.epigenetic:
-            print(f"Final stage: {self.epigenetic.stage}")
-        print("="*70)
-        print()
+        print("-" * 50)
 
 
 if __name__ == "__main__":
     seed = BloomSeed()
-    for _ in range(6):
+    for _ in range(5):
         seed.run_growth_cycle()
-    seed.print_summary()
