@@ -61,10 +61,27 @@ Living record of the Bloom Collective's evolution.
 
 **This phase focuses on the adaptive, context-sensitive "phenotype" of the system.**
 
-**Next in sequence:**
-- Implement initial EpigeneticState class and basic persistence
-- Add simple regulatory logic for Seed stage
-- Enhance bloom_seed.py to use the new state layer
-- Move into Phase 3 (modular cell-like agents) once state foundation is solid
+---
 
-*Sequence is being followed deliberately: identity → regulation/adaptation → modularity → protection + staged growth.*
+## 2026-06-11 - Phase 2 Implementation: EpigeneticState Class
+
+- Created `epigenetic_state.py` — a runnable, persistent EpigeneticState class
+- Features implemented:
+  - DevelopmentalStage enum (Seed, Sprout, Sapling, Bloom, Elder)
+  - Expression profile with 6 tunable dimensions (creativity, precision, risk_tolerance, reflection_depth, tool_use, modularity)
+  - Active vs silenced modules list
+  - Seed-stage regulatory defaults
+  - Feedback-driven adaptation (update_from_feedback)
+  - Basic stage transition scaffolding
+  - JSON persistence with change history
+  - Demo runnable via `python epigenetic_state.py`
+- This is the first concrete implementation of the regulatory layer
+
+**Biological mapping:** This is the epigenetic control layer — it determines how the Core Genome is expressed in different contexts without changing the underlying invariants.
+
+**Next in sequence:**
+- Integrate EpigeneticState into bloom_seed.py (or create a unified state manager)
+- Add more sophisticated regulatory rules
+- Prepare for Phase 3 (modular cell-like agents)
+
+*Deliberate sequence maintained: Core identity → Regulatory/adaptive layer → Modularity → Protection + staged growth.*
