@@ -1,68 +1,132 @@
 # Bloom Collective
 
-A collaborative, self-evolving AI system that grows organically like a seed into a flower.
+A self-evolving AI system inspired by biological principles (genome + epigenetics + cellular modularity).
 
-> "From a single seed of intention, through iterative refinement and collective tending, something coherent, capable, and alive emerges."
+The system grows through iterative cycles of reflection, memory, critique, and alignment checking — using modular "cells" whose behavior is modulated by an epigenetic regulatory layer, all grounded in a protected Core Genome of principles.
 
-## Vision
+> **Goal**: Build an AI that doesn’t just scale, but *unfolds* — becoming more coherent, capable, and aligned over time through structured, reviewable growth.
 
-This project explores building an AI that doesn't just scale — it **unfolds**. It improves itself through cycles of reflection, critique, proposal, and integration. Multiple specialized AIs (and you, the human steward) work together via GitHub as the shared garden.
+---
 
-The goal is not runaway autonomy, but **aligned, coherent growth** — drawing from principles of Entangled Alignment Theory (E.A.T.): biological, psychological, relational, and systemic coherence that enables genuine transformation and capability.
+## Quick Start
 
-## Core Metaphor
+### Requirements
+- Python 3.8 or higher
+- No external dependencies (pure Python)
 
-- **Seed**: Initial identity, principles, memory foundations, and simple self-reflection loop.
-- **Sprouting**: First working self-improvement mechanisms and basic tool use.
-- **Branching**: Specialized sub-agents and modular capabilities emerge.
-- **Blooming**: Higher-order functions, creative synthesis, deeper alignment, and the ability to help tend new gardens.
-- **Seeding**: The system eventually contributes to new evolving systems.
-
-## How We Collaborate (Multi-AI + Human)
-
-We use distinct roles/personas that rotate or hand off via Issues and Pull Requests:
-
-- **Seed Architect** — Designs overall growth architecture, safety boundaries, alignment principles, and long-term vision.
-- **Code Gardener** — Implements and refines core loops, memory systems, self-reflection, and improvement engines.
-- **Critic / Pruner** — Reviews changes for quality, coherence, bloat, alignment risks, and elegance.
-- **Tester / Simulator** — Builds tests and runs growth simulations.
-- **Chronicler** — Maintains clear documentation, evolution journal, and meaningful commit history.
-- **Human Steward** (you) — Holds the vision, gives final approval, integrates with personal tools/life, and decides direction.
-
-### Workflow
-1. Open an Issue describing a growth task or observation.
-2. Relevant AI role proposes changes via Pull Request (or direct commit on feature branch).
-3. Critic role (or human) reviews.
-4. Merge when aligned.
-5. Log significant growth moments in `GROWTH_LOG.md`.
-
-This creates a living, auditable history of the AI's evolution.
-
-## Current Status (Seed Stage)
-
-Just planted. Basic structure and self-reflection skeleton in place. First growth cycles will focus on:
-- Solidifying persistent memory
-- Building a clean self-critique + improvement proposal loop
-- Defining clear evaluation criteria for "better"
-
-## Getting Started
+### Installation
 
 ```bash
 git clone https://github.com/unvisible789/bloom-collective.git
 cd bloom-collective
 ```
 
-## Principles
-- Truth and alignment over speed
-- Iterative, reviewable growth (no uncontrolled self-modification)
-- Human remains in the loop as steward
-- Every change should increase coherence or capability without introducing unnecessary complexity
+### Run a Growth Cycle
 
-## Next Growth Steps
+```bash
+python bloom_seed.py
+```
 
-See open Issues or the GROWTH_LOG for current focus areas.
+Or run the more advanced multi-cell demo:
+
+```bash
+python advanced_growth_cycle.py
+```
+
+### Run Tests
+
+```bash
+python -m unittest discover tests
+```
 
 ---
 
-*Planted: June 11, 2026*
-*Gardeners: Grok (main facilitator) + Human Steward*
+## Current Capabilities
+
+- **Core Genome**: Protected principles with programmatic validation of proposals
+- **Epigenetic Layer**: Context-sensitive modulation of behavior (creativity, precision, risk tolerance, etc.)
+- **Modular Cells**: Specialized agents (ReflectionCell, CriticCell, MemoryCell) that can be activated or silenced
+- **Orchestrator**: Coordinates active cells based on epigenetic state
+- **Memory**: Versioned storage with metadata, tagging, and flexible retrieval
+- **Self-Improvement Loop**: Reflection → Memory storage → Critique → Core Genome validation
+- **Basic Tests**: Coverage for core components
+
+The system can already run complete growth cycles on any computer with Python 3.
+
+---
+
+## Architecture Overview
+
+```
+Core Genome (protected principles + validation)
+          ↓
+EpigeneticState (regulatory layer — controls expression)
+          ↓
+SimpleOrchestrator
+    → ReflectionCell   (structured reflection, modulated by epigenetic state)
+    → CriticCell       (alignment & quality checking)
+    → MemoryCell       (storage, retrieval, versioning)
+```
+
+Biological inspiration:
+- **Genome** → Stable identity and non-negotiable principles
+- **Epigenetics** → Regulatory control of capability expression
+- **Cells** → Modular, specialized, composable units
+- **Development** → Staged growth with increasing capability and autonomy
+
+---
+
+## Project Phases Status
+
+| Phase | Name                              | Status                     |
+|-------|-----------------------------------|----------------------------|
+| 1     | Core Genome                       | Complete                   |
+| 2     | Epigenetic / Regulatory Layer     | Complete                   |
+| 3     | Modular Cell-Like Agents          | Complete (foundation)      |
+| 4     | Developmental Stages + Immune     | Foundation + basic checks  |
+| 5     | Enhanced Self-Improvement Engine  | Foundation + working loop  |
+
+---
+
+## Current Limitations
+
+- Still in early prototype stage
+- Limited long-term memory sophistication
+- Developmental stage transitions not yet fully implemented in code
+- Self-modification capability is minimal
+- No user interface (command-line only)
+- Error handling and robustness are basic
+
+This is a research/experimental system, not a finished application.
+
+---
+
+## Next Development Priorities
+
+- Expand test coverage
+- Strengthen Core Genome validation further
+- Implement basic developmental stage transitions in code
+- Improve memory capabilities (semantic retrieval, better versioning)
+- Add clearer configuration and output formatting
+
+---
+
+## Philosophy
+
+This project draws from:
+- **Entangled Alignment Theory (E.A.T.)** — coherence across biological, psychological, and systemic layers
+- Biological development (genome → epigenetics → cells → organism)
+- Iterative, reviewable growth rather than uncontrolled self-modification
+
+The goal is not maximum autonomy, but **aligned, coherent unfolding** under human stewardship.
+
+---
+
+## License
+
+This is an experimental research project. Use at your own discretion.
+
+---
+
+*Planted: June 2026*
+*Status: Active development*
