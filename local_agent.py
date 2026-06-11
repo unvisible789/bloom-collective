@@ -193,7 +193,7 @@ class LocalAgent:
             self._log(f"Failed to save history: {e}")
             return False
 
-    def load_history(self, filepath: str = "agent_history.json") -> bool:
+    def load_history(self, filepath: str = "agent_history.json") -> bool):
         try:
             with open(filepath, "r") as f:
                 self.history = json.load(f)
