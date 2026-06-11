@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Further Improved)
+Bloom Collective - Local Agent (Enhanced)
 
-Better cell coordination and error resilience.
+Now uses FileSystemCell for real file operations during execution.
 """
 from typing import Any, Dict, List, Optional
 
@@ -28,9 +28,8 @@ class LocalAgent:
         self.history: List[Dict[str, Any]] = []
 
     def _safe_call(self, cell, method: str, *args, **kwargs) -> Dict[str, Any]:
-        """Safely call a method on a cell if it exists."""
         if cell is None:
-            return {"status": "unavailable", "message": f"{cell} not available"}
+            return {"status": "unavailable"}
         try:
             func = getattr(cell, method, None)
             if callable(func):
@@ -52,11 +51,21 @@ class LocalAgent:
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # Execute steps (simplified)
+            # Execute using FileSystemCell where possible
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
-                    step_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
-                    result["cycles"].append({"action": "execute_step", "result": step_result})
+                    step_text = step.get("step", "") if isinstance(step, dict) else str(step)
+
+                    if "list" in step_text.lower() or "state" in step_text.lower():
+                        fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
+                        result["cycles"].append({"action": "file_system", "result": fs_result})
+
+                    elif "read" in step_text.lower():
+                        fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
+                        result["cycles"].append({"action": "file_system", "result": fs_result})
+
+                    else:
+                        result["cycles"].append({"action": "step", "step": step_text, "status": "simulated"})
 
             # Verification
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
