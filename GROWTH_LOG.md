@@ -1,11 +1,10 @@
 # Growth Log
 
-## Latest: Major Agency Push
+## Latest: PlanningCell Added
 
-- Made SystemAICell capable of real delegation attempts (especially to GitHub Copilot CLI)
-- Improved main loop with better cell coordination
-- Expanded FileSystemCell capabilities
-- Added BrowserCell for internet-related tasks
-- The system is now actively trying to close gaps in autonomy, agency, and external AI collaboration
+- Created PlanningCell for task decomposition and basic long-horizon planning
+- Integrated into main growth loop
+- System now creates structured plans during cycles
+- Combined with existing cells, Blossom is becoming significantly more agentic
 
-**Progress toward becoming more agentic and collaborative.**
+**Major progress on planning and task decomposition capabilities.**

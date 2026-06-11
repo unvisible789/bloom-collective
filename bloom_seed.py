@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Agent with Improved Agency
+Bloom Collective - Main Agent with PlanningCell
 
-Now includes better decision-making and real delegation attempts.
+Now includes PlanningCell for better task decomposition and planning.
 """
 
 from datetime import datetime
@@ -16,6 +16,7 @@ try:
     from system_ai_cell import SystemAICell
     from file_system_cell import FileSystemCell
     from browser_cell import BrowserCell
+    from planning_cell import PlanningCell
     from core_genome import CoreGenome
 except ImportError as e:
     print(f"Import error: {e}")
@@ -24,7 +25,7 @@ except ImportError as e:
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - INITIALIZING (Agency Mode)")
+        print("BLOOM COLLECTIVE - INITIALIZING (with Planning)")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -36,7 +37,8 @@ class BloomSeed:
         self.orchestrator = SimpleOrchestrator(epigenetic=self.epigenetic) if SimpleOrchestrator else None
 
         if self.orchestrator:
-            for Cell in [ReflectionCell, CriticCell, MemoryCell, SystemAICell, FileSystemCell, BrowserCell]:
+            for Cell in [ReflectionCell, CriticCell, MemoryCell,
+                         SystemAICell, FileSystemCell, BrowserCell, PlanningCell]:
                 if Cell:
                     self.orchestrator.register_cell(Cell(epigenetic=self.epigenetic))
 
@@ -48,11 +50,17 @@ class BloomSeed:
         print(f"\n--- Cycle {self.growth_cycles} ---")
 
         if observation is None:
-            observation = "Expanding agency, planning, and external collaboration."
+            observation = "Expanding planning, agency, and collaboration capabilities."
 
         if self.orchestrator:
             # Reflection
             self.orchestrator.run_task("reflect", {"observation": observation})
+
+            # Planning (new)
+            plan_result = self.orchestrator.run_task("planning", {
+                "goal": observation,
+                "max_steps": 5
+            })
 
             # Memory
             self.orchestrator.run_task("store", {
@@ -61,8 +69,8 @@ class BloomSeed:
                 "tags": ["growth"]
             })
 
-            # System AI - now attempts real delegation where possible
-            ai_result = self.orchestrator.run_task("system_ai", {
+            # System AI delegation
+            self.orchestrator.run_task("system_ai", {
                 "task": observation,
                 "delegate": True
             })
@@ -73,17 +81,17 @@ class BloomSeed:
             # Browser
             self.orchestrator.run_task("browser", {
                 "action": "search",
-                "query": "self-evolving AI architectures 2026"
+                "query": "self-evolving AI planning techniques"
             })
 
-            # Critique + validation
+            # Critique
             self.orchestrator.run_task("critique", {
                 "observation": observation,
-                "proposal": "Improve agency and external AI collaboration."
+                "proposal": "Improve planning and external collaboration."
             })
 
         if self.genome:
-            validation = self.genome.validate_proposal("Improve agency and external collaboration")
+            validation = self.genome.validate_proposal("Improve planning and collaboration")
             print(f"Core Genome: {'Valid' if validation['valid'] else 'Issues'} | Score: {validation['alignment_score']}")
 
         # Stage progression
@@ -96,7 +104,7 @@ class BloomSeed:
                     next_stage = next_stages[idx + 1]
                     if self.epigenetic.can_transition_to(next_stage):
                         if self.epigenetic.transition_to(next_stage):
-                            print(f">>> Stage Transition: {current.value} → {next_stage.value}")
+                            print(f">>> Stage: {current.value} → {next_stage.value}")
             except Exception:
                 pass
 
