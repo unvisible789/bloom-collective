@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Epigenetic State (Phase 2)
+Bloom Collective - Epigenetic State (with basic stage transitions)
 
-This module implements the regulatory / epigenetic layer.
-It controls capability expression, developmental stage, and context-sensitive adaptation
-without modifying the Core Genome.
-
-Biological inspiration:
-- Epigenetics regulates gene expression without changing DNA
-- Different cell types express different subsets of the same genome
-- Environment and experience shape expression over time
+Now includes simple developmental stage transition logic.
+This is the first implementation of Phase 4 stage behavior.
 """
 
 import json
@@ -28,14 +22,8 @@ class DevelopmentalStage(str, Enum):
 
 
 class EpigeneticState:
-    """
-    Represents the current regulatory/epigenetic state of the system.
-    This is the tunable, context-sensitive layer that controls how the Core Genome is expressed.
-    """
+    VERSION = "0.3.0-epigenetic"
 
-    VERSION = "0.2.0-epigenetic"
-
-    # Default expression dimensions (0.0 to 1.0)
     DEFAULT_EXPRESSION = {
         "creativity": 0.45,
         "precision": 0.75,
@@ -54,7 +42,6 @@ class EpigeneticState:
         if self.state_path.exists():
             with open(self.state_path, "r") as f:
                 return json.load(f)
-        # Fresh initialization (Seed stage)
         return {
             "version": self.VERSION,
             "developmental_stage": DevelopmentalStage.SEED.value,
@@ -69,8 +56,6 @@ class EpigeneticState:
     def _save(self):
         with open(self.state_path, "w") as f:
             json.dump(self.data, f, indent=2)
-
-    # --- Core Accessors ---
 
     @property
     def stage(self) -> str:
@@ -89,13 +74,53 @@ class EpigeneticState:
     def get_active_modules(self) -> list:
         return self.data.get("active_modules", []).copy()
 
-    # --- Regulatory Logic (Seed stage rules) ---
+    # --- Stage Transition Logic ---
+
+    def can_transition_to(self, new_stage: DevelopmentalStage) -> bool:
+        """Basic rules for allowed stage transitions."""
+        current = DevelopmentalStage(self.stage)
+        order = list(DevelopmentalStage)
+
+        current_index = order.index(current)
+        new_index = order.index(new_stage)
+
+        # Can only move forward one stage at a time for now
+        return new_index == current_index + 1
+
+    def transition_to(self, new_stage: DevelopmentalStage) -> bool:
+        """
+        Attempt to transition to a new developmental stage.
+        Returns True if successful.
+        """
+        if not self.can_transition_to(new_stage):
+            self._log_change(f"Blocked transition attempt: {self.stage} → {new_stage.value}")
+            return False
+
+        old_stage = self.stage
+        self.data["developmental_stage"] = new_stage.value
+
+        # Adjust expression profile based on new stage (basic version)
+        if new_stage == DevelopmentalStage.SPROUT:
+            self.data["expression_profile"]["tool_use"] = 0.45
+            self.data["expression_profile"]["modularity"] = 0.50
+            self.data["active_modules"].extend(["basic_proposal", "simple_tool_use"])
+
+        elif new_stage == DevelopmentalStage.SAPLING:
+            self.data["expression_profile"]["creativity"] = 0.55
+            self.data["expression_profile"]["reflection_depth"] = 0.75
+            self.data["active_modules"].extend(["advanced_reflection", "memory_retrieval"])
+
+        elif new_stage == DevelopmentalStage.BLOOM:
+            self.data["expression_profile"]["creativity"] = 0.65
+            self.data["expression_profile"]["modularity"] = 0.70
+            self.data["risk_tolerance"] = 0.40
+
+        self._log_change(f"Stage transition: {old_stage} → {new_stage.value}")
+        self.data["last_updated"] = datetime.now().isoformat()
+        self._save()
+        return True
 
     def apply_seed_stage_regulation(self):
-        """
-        Apply conservative regulatory defaults appropriate for Seed stage.
-        This is the 'default phenotype' for early growth.
-        """
         self.data["expression_profile"].update({
             "creativity": 0.40,
             "precision": 0.80,
@@ -108,56 +133,25 @@ class EpigeneticState:
         self._log_change("Applied Seed stage regulatory defaults")
 
     def update_from_feedback(self, feedback_type: str, intensity: float = 0.1):
-        """
-        Simple regulatory update based on feedback.
-        This is a placeholder for more sophisticated learned regulation later.
-        """
         profile = self.data["expression_profile"]
 
         if feedback_type == "positive_creative":
             profile["creativity"] = min(1.0, profile["creativity"] + intensity)
-            self._log_change(f"Upregulated creativity (+{intensity})")
 
         elif feedback_type == "need_precision":
             profile["precision"] = min(1.0, profile["precision"] + intensity)
             profile["risk_tolerance"] = max(0.0, profile["risk_tolerance"] - intensity * 0.5)
-            self._log_change(f"Upregulated precision, downregulated risk")
 
         elif feedback_type == "high_stakes":
             profile["precision"] = min(1.0, profile["precision"] + intensity * 1.5)
             profile["risk_tolerance"] = max(0.0, profile["risk_tolerance"] - intensity)
-            self._log_change("High-stakes mode activated")
 
         elif feedback_type == "exploratory":
             profile["creativity"] = min(1.0, profile["creativity"] + intensity)
             profile["risk_tolerance"] = min(1.0, profile["risk_tolerance"] + intensity * 0.6)
-            self._log_change("Exploratory mode activated")
 
         self.data["last_updated"] = datetime.now().isoformat()
         self._save()
-
-    def transition_stage(self, new_stage: DevelopmentalStage) -> bool:
-        """
-        Transition to a new developmental stage.
-        In later phases this will unlock modules and adjust many parameters.
-        For now it is mostly a marker + light regulatory shift.
-        """
-        if new_stage.value == self.stage:
-            return False
-
-        old_stage = self.stage
-        self.data["developmental_stage"] = new_stage.value
-
-        # Light regulatory shifts on stage change (will become richer)
-        if new_stage == DevelopmentalStage.SPROUT:
-            self.data["active_modules"].extend(["basic_proposal", "simple_tool_use"])
-            self.data["silenced_modules"] = [m for m in self.data["silenced_modules"] if m not in ["basic_proposal", "simple_tool_use"]]
-            self.data["expression_profile"]["tool_use"] = 0.45
-
-        self._log_change(f"Stage transition: {old_stage} → {new_stage.value}")
-        self.data["last_updated"] = datetime.now().isoformat()
-        self._save()
-        return True
 
     def _log_change(self, description: str):
         entry = {
@@ -166,7 +160,6 @@ class EpigeneticState:
             "stage": self.stage,
         }
         self.data.setdefault("change_history", []).append(entry)
-        # Keep history bounded
         if len(self.data["change_history"]) > 50:
             self.data["change_history"] = self.data["change_history"][-50:]
 
@@ -175,19 +168,4 @@ class EpigeneticState:
 
     def __repr__(self):
         return (f"EpigeneticState(stage={self.stage}, "
-                f"creativity={self.get_expression_level('creativity'):.2f}, "
-                f"precision={self.get_expression_level('precision'):.2f})")
-
-
-if __name__ == "__main__":
-    state = EpigeneticState()
-    print("Initial Epigenetic State:")
-    print(state)
-    print("\nActive modules:", state.get_active_modules())
-    print("\nApplying Seed stage regulation...")
-    state.apply_seed_stage_regulation()
-    print(state)
-    print("\nSimulating positive creative feedback...")
-    state.update_from_feedback("positive_creative", 0.15)
-    print(state)
-    print("\nState saved to", state.state_path)
+                f"creativity={self.get_expression_level('creativity'):.2f})")

@@ -93,32 +93,34 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## 2026-06-11 - Phase 4: Developmental Stages + Immune (Completed to Foundation Level)
+## 2026-06-11 - Phase 4: Developmental Stages + Immune (In Progress)
 
-- `DEVELOPMENTAL_STAGES.md` created with clear stage definitions and transition philosophy
-- Basic stage awareness exists in EpigeneticState and cells
-- `CriticCell` provides immune-style alignment and quality checking
-- Lightweight immune behavior is active and integrated
+- `DEVELOPMENTAL_STAGES.md` created
+- Basic stage transition logic now implemented in `epigenetic_state.py`
+- `can_transition_to()` and `transition_to()` methods added
+- Expression profile and active modules now adjust on stage change
 
-**Phase 4 complete at foundation level.**
+**First working stage transition logic is now in code.**
+
+**Phase 4 moving from design into implementation.**
 
 ---
 
 ## 2026-06-11 - Phase 5: Enhanced Self-Improvement Engine (Completed to Foundation Level)
 
-- `advanced_growth_cycle.py` demonstrates a full multi-cell workflow
+- `advanced_growth_cycle.py` and `bloom_seed.py` demonstrate integrated workflows
 
-**Phase 5 complete at foundation level.**
+**Phase 5 foundation complete.**
 
 ---
 
-## Latest: Expanded Test Coverage
+## Latest: Basic Stage Transition Logic Added
 
-- Added `tests/test_orchestrator.py`
-- Added `tests/test_memory_improved.py`
-- Added `tests/test_integration.py`
-- Tests now cover orchestrator coordination, improved MemoryCell features (ID-based retrieval, tagging, get_recent), and full BloomSeed integration
+- Added `can_transition_to()` and `transition_to()` methods to `EpigeneticState`
+- Basic rules: can only advance one stage at a time
+- Expression profile and active modules now change when transitioning stages
+- This is the first concrete implementation of developmental stages in code
 
-**Test coverage has been meaningfully expanded.**
+**This advances Phase 4 from design into working behavior.**
 
-*Next recommended: Continue expanding tests or implement basic stage transition logic.*
+*Next recommended: Wire stage transitions into the main growth loop or expand tests.*
