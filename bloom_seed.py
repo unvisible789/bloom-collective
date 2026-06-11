@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Agent with PlanningCell
+Bloom Collective - Main Agent with VerificationCell
 
-Now includes PlanningCell for better task decomposition and planning.
+Now includes self-verification after actions.
 """
 
 from datetime import datetime
@@ -17,6 +17,7 @@ try:
     from file_system_cell import FileSystemCell
     from browser_cell import BrowserCell
     from planning_cell import PlanningCell
+    from verification_cell import VerificationCell
     from core_genome import CoreGenome
 except ImportError as e:
     print(f"Import error: {e}")
@@ -25,7 +26,7 @@ except ImportError as e:
 class BloomSeed:
     def __init__(self):
         print("\n" + "="*70)
-        print("BLOOM COLLECTIVE - INITIALIZING (with Planning)")
+        print("BLOOM COLLECTIVE - INITIALIZING (with Verification)")
         print("="*70)
 
         self.epigenetic = EpigeneticState() if EpigeneticState else None
@@ -37,8 +38,8 @@ class BloomSeed:
         self.orchestrator = SimpleOrchestrator(epigenetic=self.epigenetic) if SimpleOrchestrator else None
 
         if self.orchestrator:
-            for Cell in [ReflectionCell, CriticCell, MemoryCell,
-                         SystemAICell, FileSystemCell, BrowserCell, PlanningCell]:
+            for Cell in [ReflectionCell, CriticCell, MemoryCell, SystemAICell,
+                         FileSystemCell, BrowserCell, PlanningCell, VerificationCell]:
                 if Cell:
                     self.orchestrator.register_cell(Cell(epigenetic=self.epigenetic))
 
@@ -50,17 +51,12 @@ class BloomSeed:
         print(f"\n--- Cycle {self.growth_cycles} ---")
 
         if observation is None:
-            observation = "Expanding planning, agency, and collaboration capabilities."
+            observation = "Expanding verification, planning, and collaboration."
 
         if self.orchestrator:
-            # Reflection
+            # Reflection + Planning
             self.orchestrator.run_task("reflect", {"observation": observation})
-
-            # Planning (new)
-            plan_result = self.orchestrator.run_task("planning", {
-                "goal": observation,
-                "max_steps": 5
-            })
+            self.orchestrator.run_task("planning", {"goal": observation})
 
             # Memory
             self.orchestrator.run_task("store", {
@@ -70,31 +66,30 @@ class BloomSeed:
             })
 
             # System AI delegation
-            self.orchestrator.run_task("system_ai", {
-                "task": observation,
-                "delegate": True
-            })
+            self.orchestrator.run_task("system_ai", {"task": observation, "delegate": True})
 
             # File System
             self.orchestrator.run_task("file_system", {"action": "list", "path": "."})
 
             # Browser
-            self.orchestrator.run_task("browser", {
-                "action": "search",
-                "query": "self-evolving AI planning techniques"
+            self.orchestrator.run_task("browser", {"action": "search", "query": observation})
+
+            # Verification (new)
+            self.orchestrator.run_task("verification", {
+                "action": "growth cycle actions",
+                "expected_outcome": "Positive progress on capabilities"
             })
 
             # Critique
             self.orchestrator.run_task("critique", {
                 "observation": observation,
-                "proposal": "Improve planning and external collaboration."
+                "proposal": "Continue improving verification and planning."
             })
 
         if self.genome:
-            validation = self.genome.validate_proposal("Improve planning and collaboration")
+            validation = self.genome.validate_proposal("Improve verification and planning")
             print(f"Core Genome: {'Valid' if validation['valid'] else 'Issues'} | Score: {validation['alignment_score']}")
 
-        # Stage progression
         if self.epigenetic and self.growth_cycles % 3 == 0:
             current = DevelopmentalStage(self.epigenetic.stage)
             next_stages = list(DevelopmentalStage)
