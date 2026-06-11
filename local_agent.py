@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (with human-readable summary)
+Bloom Collective - Local Agent
 
-Added a method to generate a clean, human-readable summary of execution.
+A local goal-planning and execution agent that coordinates
+PlanningCell, VerificationCell, SystemAICell, and FileSystemCell.
+
+Features:
+- Automatic planning using PlanningCell
+- Intelligent use of external AI (SystemAICell) when appropriate
+- File system operations via FileSystemCell
+- Verification of outcomes
+- Execution history and human-readable summaries
+- Robust error handling
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -20,6 +29,10 @@ except ImportError:
 
 
 class LocalAgent:
+    """
+    Local agent that can plan and execute goals using available cells.
+    """
+
     def __init__(self, verbose: bool = True):
         self.planning = PlanningCell() if PlanningCell else None
         self.verification = VerificationCell() if VerificationCell else None
@@ -34,6 +47,7 @@ class LocalAgent:
             print(f"[LocalAgent] {message}")
 
     def _safe_call(self, cell, method: str, *args, **kwargs) -> Dict[str, Any]:
+        """Safely call a method on a cell, returning error dict on failure."""
         if cell is None:
             return {"status": "unavailable"}
         try:
@@ -45,6 +59,7 @@ class LocalAgent:
             return {"status": "error", "message": str(e)}
 
     def execute_goal(self, goal: str) -> Dict[str, Any]:
+        """Execute a goal from start to finish."""
         self._log(f"Starting goal: {goal}")
         start_time = datetime.now()
 
@@ -58,18 +73,18 @@ class LocalAgent:
         }
 
         try:
-            # Planning
+            # Step 1: Create a plan
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI
-            use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with"])
+            # Step 2: Use external AI if the goal seems to benefit from it
+            use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with", "debug", "refactor"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # Process plan steps
+            # Step 3: Process plan steps
             executed = 0
             failed = 0
 
@@ -111,12 +126,12 @@ class LocalAgent:
 
                     result["cycles"].append({"action": "step", "result": step_record})
 
-            # Verification
+            # Step 4: Verify the outcome
             self._log("Verifying outcome...")
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
 
-            # Summary
+            # Build summary
             result["summary"] = {
                 "total_cycles": len(result["cycles"]),
                 "steps_executed": executed,
@@ -138,20 +153,24 @@ class LocalAgent:
         return result
 
     def plan_goal(self, goal: str) -> List[Dict[str, Any]]:
+        """Return just the planned steps for a goal."""
         result = self._safe_call(self.planning, "create_plan", goal)
         if result.get("plan"):
             return result["plan"].get("steps", [])
         return []
 
     def get_history(self) -> List[Dict[str, Any]]:
+        """Return full execution history."""
         return self.history
 
     def get_last_summary(self) -> Dict[str, Any]:
+        """Return summary dict of the most recent execution."""
         if not self.history:
             return {}
         return self.history[-1].get("summary", {})
 
     def get_last_human_summary(self) -> str:
+        """Return a clean, human-readable summary of the last execution."""
         if not self.history:
             return "No executions yet."
 
@@ -166,7 +185,6 @@ class LocalAgent:
             f"Used external AI: {summary.get('used_ai', False)}",
             f"Duration: {summary.get('duration_seconds', 0):.2f} seconds",
         ]
-
         return "\n".join(lines)
 
 
