@@ -13,6 +13,7 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
+        "charliermarsh.ruff",
         "GitHub.copilot",
         "GitHub.copilot-chat"
       ],
@@ -20,11 +21,16 @@
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
         "python.formatting.provider": "black",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "ruff.organizeImports": true,
+        "ruff.fixAll": true
       }
     }
   },
-  "postCreateCommand": "pip install --upgrade pip && pip install black pytest mypy",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
   "forwardPorts": [],
   "remoteUser": "vscode"
 }
