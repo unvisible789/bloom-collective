@@ -112,12 +112,14 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Core Genome Enforcement + Architecture Integration
+## Latest: Tests Added
 
-- Added `core_genome.py` with `validate_proposal()` for programmatic Core Genome checking
-- Refactored `bloom_seed.py` to be the clean main entry point using Orchestrator + Cells + Core Genome validation
-- Polished `advanced_growth_cycle.py` to demonstrate the full stack
+- Created `tests/` directory with basic but useful tests:
+  - `test_epigenetic_state.py`
+  - `test_core_genome.py`
+  - `test_cells.py`
+- Tests cover initialization, feedback adaptation, Core Genome validation (safe vs dangerous proposals), and cell activation/processing
 
-**The system is now significantly more integrated and enforceable.**
+**This improves reliability and makes future development safer.**
 
-*Recommended next: Add tests, improve memory capabilities, or strengthen Core Genome validation further.*
+*Next recommended: Expand tests, improve MemoryCell, or add more Core Genome validation rules.*
