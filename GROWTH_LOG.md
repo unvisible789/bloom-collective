@@ -1,10 +1,9 @@
 # Growth Log
 
-## Latest: VerificationCell Added
+## Latest: PlanningCell Enhanced
 
-- Created VerificationCell for self-verifying execution
-- Integrated into main growth loop
-- System now attempts to verify outcomes after actions
-- Combined with PlanningCell, this significantly improves agency and reliability
+- Improved PlanningCell with dependency tracking and prioritization
+- Better support for longer-horizon and structured planning
+- System now creates more sophisticated plans during growth cycles
 
-**Major progress on self-verification and overall agency.**
+**Significant improvement in planning and task decomposition capabilities.**

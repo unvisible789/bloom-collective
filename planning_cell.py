@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - PlanningCell
+Bloom Collective - PlanningCell (Enhanced)
 
-Basic cell for task decomposition and planning.
-Helps break down goals into steps and supports longer-horizon thinking.
+Improved planning with basic dependency tracking and prioritization.
+Supports better long-horizon thinking.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -17,11 +17,6 @@ except ImportError:
 
 
 class PlanningCell(BaseCell):
-    """
-    Cell responsible for breaking down goals into actionable steps
-    and supporting longer-term planning.
-    """
-
     def __init__(self, epigenetic: Optional[EpigeneticState] = None):
         super().__init__(name="PlanningCell", epigenetic=epigenetic)
         self._internal_state = {
@@ -29,38 +24,36 @@ class PlanningCell(BaseCell):
             "last_plan": None,
         }
 
-    def create_plan(self, goal: str, max_steps: int = 5) -> Dict[str, Any]:
-        """
-        Break down a goal into a simple step-by-step plan.
-        """
+    def create_plan(self, goal: str, max_steps: int = 6) -> Dict[str, Any]:
         steps = []
+        dependencies = {}
 
-        # Very basic heuristic planning (can be greatly improved later)
-        if "file" in goal.lower() or "computer" in goal.lower():
+        goal_lower = goal.lower()
+
+        if "file" in goal_lower or "computer" in goal_lower:
             steps = [
-                "Understand the current file system state",
-                "Identify needed file operations",
-                "Execute file operations safely",
-                "Verify the result"
+                {"step": "Understand current file system state", "priority": 1},
+                {"step": "Identify needed file operations", "priority": 2},
+                {"step": "Execute file operations safely", "priority": 3, "depends_on": [1]},
+                {"step": "Verify results", "priority": 4, "depends_on": [3]}
             ]
-        elif "code" in goal.lower() or "develop" in goal.lower():
+        elif "code" in goal_lower or "develop" in goal_lower:
             steps = [
-                "Clarify the coding goal",
-                "Check existing code structure",
-                "Propose implementation approach",
-                "Delegate to coding assistant if needed",
-                "Test and verify"
+                {"step": "Clarify the coding goal", "priority": 1},
+                {"step": "Check existing code structure", "priority": 2},
+                {"step": "Propose implementation approach", "priority": 3, "depends_on": [1, 2]},
+                {"step": "Delegate to coding assistant if appropriate", "priority": 4, "depends_on": [3]},
+                {"step": "Test and verify", "priority": 5, "depends_on": [4]}
             ]
         else:
             steps = [
-                "Clarify the goal",
-                "Gather relevant information",
-                "Break into smaller tasks",
-                "Execute tasks in order",
-                "Review outcome"
+                {"step": "Clarify the goal", "priority": 1},
+                {"step": "Gather relevant information", "priority": 2, "depends_on": [1]},
+                {"step": "Break into smaller tasks", "priority": 3, "depends_on": [2]},
+                {"step": "Execute tasks in order", "priority": 4, "depends_on": [3]},
+                {"step": "Review outcome", "priority": 5, "depends_on": [4]}
             ]
 
-        # Limit number of steps
         steps = steps[:max_steps]
 
         plan = {
@@ -73,7 +66,7 @@ class PlanningCell(BaseCell):
         self._internal_state["plans_created"] += 1
         self._internal_state["last_plan"] = plan
 
-        self.log(f"Created plan with {len(steps)} steps for: {goal}")
+        self.log(f"Created enhanced plan with {len(steps)} steps for: {goal}")
 
         return {
             "status": "success",
@@ -85,7 +78,7 @@ class PlanningCell(BaseCell):
             return {"status": "inactive", "message": "PlanningCell is currently silenced."}
 
         goal = input_data.get("goal", input_data.get("task", "general goal"))
-        max_steps = input_data.get("max_steps", 5)
+        max_steps = input_data.get("max_steps", 6)
 
         return self.create_plan(goal, max_steps)
 
