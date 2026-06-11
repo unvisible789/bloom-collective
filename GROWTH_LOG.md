@@ -114,10 +114,12 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: Tests + Polish
+## Latest: Self-Development Directives + SystemAICell
 
-- Added `tests/test_stage_transitions.py`
-- Improved `bloom_seed.py` with end-of-run summary report
-- Project is becoming more robust and user-friendly when run
+- Updated `core_genome.py` with embedded Self-Development Directives (including instructions for tool development and external AI usage)
+- Created `system_ai_cell.py` — a new cell for detecting and proposing use of onboard AIs (Copilot, etc.)
+- This begins the implementation of autonomous capability growth as requested
 
-*Next recommended: Further expand tests or add more stage-aware behaviors.*
+**The system now has internal instructions for developing new tools and leveraging existing system AIs.**
+
+*Next: Integrate SystemAICell into the main loop and add stage-gating.*
