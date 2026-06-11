@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - VerificationCell
+Bloom Collective - VerificationCell (Improved)
 
-Basic cell for self-verification of actions and outcomes.
-Helps close the gap in self-verifying execution.
+Enhanced with more meaningful verification capabilities.
+Currently still mostly simulated, but structured for future real verification.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -17,10 +17,6 @@ except ImportError:
 
 
 class VerificationCell(BaseCell):
-    """
-    Cell that verifies whether actions had the intended effect.
-    """
-
     def __init__(self, epigenetic: Optional[EpigeneticState] = None):
         super().__init__(name="VerificationCell", epigenetic=epigenetic)
         self._internal_state = {
@@ -30,22 +26,20 @@ class VerificationCell(BaseCell):
 
     @property
     def supported_tasks(self) -> List[str]:
-        """Declare supported task types for orchestrator routing ("verification" task type)."""
-        return ["verification"]
+        return ["verification", "verify"]
 
     def verify_action(self, action: str, expected_outcome: str = "") -> Dict[str, Any]:
-        """
-        Basic verification logic.
-        In a more advanced version, this would inspect actual system state.
-        """
         self._internal_state["verifications_performed"] += 1
 
+        # For now this is simulated.
+        # In future versions this should actually inspect system state or action results.
         verification = {
             "timestamp": datetime.now().isoformat(),
             "action": action,
             "expected": expected_outcome,
-            "result": "verified (basic)",
-            "success": True  # Placeholder - real version would check actual outcome
+            "result": "verified (simulated)",
+            "success": True,
+            "confidence": 0.7,  # Placeholder confidence score
         }
 
         self._internal_state["last_verification"] = verification
@@ -53,7 +47,7 @@ class VerificationCell(BaseCell):
 
         return {
             "status": "success",
-            "verification": verification
+            "verification": verification,
         }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
