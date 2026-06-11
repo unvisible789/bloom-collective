@@ -81,9 +81,23 @@ Living record of the Bloom Collective's evolution.
 
 **This completes Phase 2.**
 
-**Current system state:**
-The Bloom Seed can now reflect while "knowing" its own regulatory/epigenetic state. This is the first small but meaningful step toward a system whose behavior is modulated by its internal epigenetic layer rather than being purely hardcoded.
+---
 
-**Next in sequence (Phase 3):** Begin designing modular cell-like agents that can be selectively activated or silenced by the epigenetic layer.
+## 2026-06-11 - Phase 3 Initiated: Modular Cell-Like Agents
 
-*Sequence maintained: Identity (Phase 1) → Regulatory layer + integration (Phase 2) → Modularity (Phase 3) → Protection + staged growth (Phase 4) → Enhanced self-improvement engine (Phase 5).*
+- Added `MODULAR_AGENTS.md` with initial design
+- Biological mapping: Cells contain the full genome but express subsets based on epigenetic regulation
+- Defined core principles: Genome + Epigenetic awareness, local autonomy + global coherence, clear interfaces, composability, observability
+- Proposed initial `BaseCell` interface
+- First target cell types: ReflectionCell, MemoryCell, CriticCell, ProposalCell
+- Simple orchestrator pattern sketched
+
+**This begins the modularity phase.**
+
+**Next steps in Phase 3:**
+- Implement `BaseCell` abstract class
+- Build first concrete cell (ReflectionCell)
+- Create basic orchestrator that routes to active cells based on epigenetic state
+- Demonstrate a multi-cell growth cycle
+
+*Sequence maintained: Identity → Regulatory layer → Modularity (now) → Protection + staged growth → Enhanced engine.*
