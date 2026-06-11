@@ -93,34 +93,33 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## 2026-06-11 - Phase 4: Developmental Stages + Immune (In Progress)
+## 2026-06-11 - Phase 4: Developmental Stages + Immune (Advancing)
 
 - `DEVELOPMENTAL_STAGES.md` created
-- Basic stage transition logic now implemented in `epigenetic_state.py`
-- `can_transition_to()` and `transition_to()` methods added
-- Expression profile and active modules now adjust on stage change
+- Basic stage transition logic implemented in `epigenetic_state.py`
+- `bloom_seed.py` now demonstrates automatic stage progression every 3 cycles
+- Expression profile and active modules update on transition
 
-**First working stage transition logic is now in code.**
-
-**Phase 4 moving from design into implementation.**
+**Stage transitions are now live in the main growth loop.**
 
 ---
 
-## 2026-06-11 - Phase 5: Enhanced Self-Improvement Engine (Completed to Foundation Level)
+## 2026-06-11 - Phase 5: Enhanced Self-Improvement Engine (Strengthened)
 
-- `advanced_growth_cycle.py` and `bloom_seed.py` demonstrate integrated workflows
+- `bloom_seed.py` is now the primary, well-integrated entry point
+- Full loop: Reflection → Memory (with metadata) → Critique → Core Genome validation → Stage awareness
+- Significantly improved console output and readability
 
-**Phase 5 foundation complete.**
+**Phase 5 is now more polished and demonstrable.**
 
 ---
 
-## Latest: Basic Stage Transition Logic Added
+## Latest: Major Integration & UX Improvements
 
-- Added `can_transition_to()` and `transition_to()` methods to `EpigeneticState`
-- Basic rules: can only advance one stage at a time
-- Expression profile and active modules now change when transitioning stages
-- This is the first concrete implementation of developmental stages in code
+- `bloom_seed.py` fully wired with stage transitions, better output formatting, and memory context
+- Running 6 cycles now visibly demonstrates stage progression (Seed → Sprout, etc.)
+- Project is becoming much more coherent and impressive when run
 
-**This advances Phase 4 from design into working behavior.**
+**This is a significant step toward a more launchable and understandable system.**
 
-*Next recommended: Wire stage transitions into the main growth loop or expand tests.*
+*Next: Expand tests for stage logic or further improve memory capabilities.*

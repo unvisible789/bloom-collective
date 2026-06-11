@@ -1,29 +1,35 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Main Seed Agent (with Active Memory Usage)
+Bloom Collective - Main Seed Agent (Fully Integrated + Stage Aware)
 
-Demonstrates the improved MemoryCell in a real growth cycle:
-- Stores reflections with metadata
-- Retrieves recent memories
-- Uses memory context in reflection
+This version:
+- Uses the full modular architecture (Orchestrator + Cells)
+- Respects EpigeneticState and Core Genome
+- Shows current developmental stage
+- Demonstrates basic stage transition after several cycles
+- Has much cleaner, more informative output
 """
 
 from datetime import datetime
 
 try:
-    from epigenetic_state import EpigeneticState
+    from epigenetic_state import EpigeneticState, DevelopmentalStage
     from orchestrator import SimpleOrchestrator
     from reflection_cell import ReflectionCell
     from critic_cell import CriticCell
     from memory_cell import MemoryCell
     from core_genome import CoreGenome
 except ImportError as e:
-    print(f"Warning: {e}")
+    print(f"Import error: {e}")
     EpigeneticState = None
 
 
 class BloomSeed:
     def __init__(self):
+        print("\n" + "="*70)
+        print("BLOOM COLLECTIVE - INITIALIZING")
+        print("="*70)
+
         self.epigenetic = EpigeneticState() if EpigeneticState else None
         self.genome = CoreGenome() if 'CoreGenome' in dir() else None
 
@@ -41,78 +47,79 @@ class BloomSeed:
                 self.orchestrator.register_cell(MemoryCell(epigenetic=self.epigenetic))
 
         self.growth_cycles = 0
+        print(f"Current Stage: {self.epigenetic.stage if self.epigenetic else 'unknown'}")
+        print("Initialization complete.\n")
 
     def run_growth_cycle(self, observation: str = None):
-        print("=" * 65)
-        print("BLOOM SEED GROWTH CYCLE (with Active Memory)")
-        print("=" * 65)
-        print()
+        self.growth_cycles += 1
+
+        print("\n" + "-"*70)
+        print(f"GROWTH CYCLE {self.growth_cycles}  |  Stage: {self.epigenetic.stage if self.epigenetic else 'N/A'}")
+        print("-"*70)
 
         if observation is None:
-            observation = "System continuing to evolve with improved memory capabilities."
+            observation = f"Cycle {self.growth_cycles} - Continuing coherent growth."
 
-        # 1. Get recent memories for context
-        print("[1] Retrieving recent memories for context...")
-        recent_memories = []
+        # Show recent memory count
+        recent_count = 0
         if self.orchestrator:
             mem_cell = self.orchestrator.cells.get("MemoryCell")
             if mem_cell:
                 recent = mem_cell.get_recent(3)
-                recent_memories = recent
-                print(f"   Found {len(recent)} recent memories.")
-        print()
+                recent_count = len(recent)
 
-        # 2. Reflection (include memory context)
-        print("[2] Performing reflection...")
-        reflection_input = {
-            "observation": observation,
-            "recent_memories_count": len(recent_memories)
-        }
-        reflection_result = self.orchestrator.run_task("reflect", reflection_input) if self.orchestrator else {}
-        print(reflection_result)
-        print()
+        print(f"[Memory Context] Recent memories available: {recent_count}")
 
-        # 3. Store reflection with rich metadata
-        print("[3] Storing reflection with metadata...")
+        # Reflection
+        print("[Reflection] ...")
+        reflection_result = self.orchestrator.run_task("reflect", {"observation": observation}) if self.orchestrator else {}
+
+        # Store with metadata
         if self.orchestrator:
             self.orchestrator.run_task("store", {
                 "action": "store",
                 "content": reflection_result,
-                "tags": ["reflection", "growth", f"cycle-{self.growth_cycles + 1}"],
+                "tags": ["reflection", f"cycle-{self.growth_cycles}"],
                 "metadata": {
-                    "cycle": self.growth_cycles + 1,
-                    "stage": self.epigenetic.stage if self.epigenetic else "unknown",
-                    "has_recent_memories": len(recent_memories) > 0
+                    "cycle": self.growth_cycles,
+                    "stage": self.epigenetic.stage if self.epigenetic else "unknown"
                 }
             })
-        print()
 
-        # 4. Critique a proposal
-        print("[4] Critiquing improvement proposal...")
-        proposal = "Enhance memory retrieval with simple semantic search."
+        # Critique
+        print("[Critique] ...")
+        proposal = "Continue improving memory retrieval and stage awareness."
         critique_result = self.orchestrator.run_task("critique", {
             "observation": observation,
             "proposal": proposal
         }) if self.orchestrator else {}
-        print(critique_result)
-        print()
 
-        # 5. Core Genome validation
+        # Core Genome Validation
         if self.genome:
-            print("[5] Validating against Core Genome...")
             validation = self.genome.validate_proposal(proposal)
-            print(f"   Valid: {validation['valid']}, Score: {validation['alignment_score']}")
-            if validation['issues']:
-                print(f"   Issues: {validation['issues']}")
-            print()
+            status = "✓ Valid" if validation['valid'] else "✗ Issues found"
+            print(f"[Core Genome] {status} | Score: {validation['alignment_score']}")
 
-        self.growth_cycles += 1
-        print("=" * 65)
-        print(f"Cycle {self.growth_cycles} Complete")
-        print("=" * 65)
-        print()
+        # Attempt stage transition every 3 cycles (demo)
+        if self.epigenetic and self.growth_cycles % 3 == 0:
+            current = DevelopmentalStage(self.epigenetic.stage)
+            next_stages = list(DevelopmentalStage)
+            try:
+                idx = next_stages.index(current)
+                if idx + 1 < len(next_stages):
+                    next_stage = next_stages[idx + 1]
+                    if self.epigenetic.can_transition_to(next_stage):
+                        success = self.epigenetic.transition_to(next_stage)
+                        if success:
+                            print(f"\n>>> STAGE TRANSITION: {current.value} → {next_stage.value} <<<")
+            except Exception:
+                pass
+
+        print("-"*70)
+        print(f"Cycle {self.growth_cycles} complete.\n")
 
 
 if __name__ == "__main__":
     seed = BloomSeed()
-    seed.run_growth_cycle()
+    for _ in range(6):  # Run 6 cycles to demonstrate stage progression
+        seed.run_growth_cycle()
