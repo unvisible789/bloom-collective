@@ -153,6 +153,16 @@ class LocalBloomAgent:
         if any(term in lowered for term in ["rm -rf", "delete everything", "wipe"]):
             return [{"type": "command", "command": ["rm", "-rf", "."], "timeout": 30}]
 
+        if "git diff" in lowered or "show diff" in lowered:
+            return [{"type": "command", "command": ["git", "diff", "--stat"], "timeout": 30}]
+
+        if "git log" in lowered or "recent commits" in lowered:
+            return [{"type": "command", "command": ["git", "log", "--oneline", "-5"], "timeout": 30}]
+
+        read_target = self._read_target_from_goal(goal)
+        if read_target:
+            return [{"type": "read_file", "path": read_target}]
+
         if any(term in lowered for term in ["grok", "gpt", "delegate", "review"]):
             return [
                 {"type": "command", "command": ["git", "status", "--short"], "timeout": 30},
@@ -175,6 +185,17 @@ class LocalBloomAgent:
             {"type": "command", "command": ["git", "status", "--short"], "timeout": 30},
             {"type": "write_delegation", "goal": goal, "agents": ["Grok", "GPT"]},
         ]
+
+    def _read_target_from_goal(self, goal: str) -> Optional[str]:
+        words = goal.strip().split()
+        if not words or words[0].lower() not in {"read", "show", "open"}:
+            return None
+
+        for word in words[1:]:
+            cleaned = word.strip("\"'")
+            if "." in cleaned or "/" in cleaned or "\\" in cleaned:
+                return cleaned
+        return None
 
     def _execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
         action_type = action["type"]

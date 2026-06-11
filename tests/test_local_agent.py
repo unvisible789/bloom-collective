@@ -21,6 +21,10 @@ class FakeRunner:
             return {"returncode": 0, "stdout": "Ran 72 tests\nOK", "stderr": ""}
         if command == ["git", "status", "--short"]:
             return {"returncode": 0, "stdout": "", "stderr": ""}
+        if command == ["git", "diff", "--stat"]:
+            return {"returncode": 0, "stdout": "README.md | 2 +-", "stderr": ""}
+        if command == ["git", "log", "--oneline", "-5"]:
+            return {"returncode": 0, "stdout": "abc123 latest commit", "stderr": ""}
         return {"returncode": 0, "stdout": "ok", "stderr": ""}
 
 
@@ -115,6 +119,26 @@ class TestLocalBloomAgent(unittest.TestCase):
     def test_repo_path_escape_is_blocked(self):
         with self.assertRaises(PermissionError):
             self.agent._execute_action({"type": "read_file", "path": "../outside.txt"})
+
+    def test_read_goal_reads_repo_file(self):
+        result = self.agent.execute_goal("read README.md")
+
+        self.assertEqual(result["status"], "success")
+        read_results = [cycle["result"] for cycle in result["cycles"] if cycle["action"]["type"] == "read_file"]
+        self.assertEqual(len(read_results), 1)
+        self.assertIn("# Demo", read_results[0]["content"])
+
+    def test_git_diff_goal_runs_diff_stat(self):
+        result = self.agent.execute_goal("show git diff")
+
+        self.assertEqual(result["status"], "success")
+        self.assertIn(["git", "diff", "--stat"], [c["command"] for c in self.runner.calls])
+
+    def test_git_log_goal_runs_recent_log(self):
+        result = self.agent.execute_goal("show git log")
+
+        self.assertEqual(result["status"], "success")
+        self.assertIn(["git", "log", "--oneline", "-5"], [c["command"] for c in self.runner.calls])
 
 
 if __name__ == "__main__":
