@@ -114,13 +114,15 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: SystemAICell Integrated
+## Latest: SystemAICell Enhanced
 
-- `system_ai_cell.py` is now registered in the main orchestrator
-- During growth cycles, the system now considers using onboard AIs when relevant
-- Self-Development Directives are active in the Core Genome
-- The system is beginning to develop external AI integration capabilities as it grows
+- Improved `system_ai_cell.py` with:
+  - Better detection of available system AIs
+  - Stage-aware activation (only meaningful at Sapling+)
+  - Intelligent matching of tasks to assistant strengths
+  - Clearer proposals and reasoning
+- The cell is now actively used during growth cycles
 
-**This moves the vision of autonomous, efficient capability growth forward.**
+**The system is developing smarter external AI usage capabilities.**
 
-*Next recommended: Add more intelligent decision-making in SystemAICell or expand stage-gating.*
+*Next recommended: Allow actual delegation to detected AIs or add more cells.*
