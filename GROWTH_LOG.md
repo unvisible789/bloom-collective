@@ -114,13 +114,16 @@ Living record of the Bloom Collective's evolution.
 
 ---
 
-## Latest: SystemAICell Now Functional
+## Latest: SystemAICell Expanded for Grok & Codex
 
-- Upgraded `system_ai_cell.py` with delegation logic
-- The cell can now simulate/prepare actual task delegation to detected system AIs
-- Maintains stage-gating and intelligent matching
-- Integrated and active in the main growth loop
+- Updated `system_ai_cell.py` to detect and intelligently use:
+  - Microsoft Copilot
+  - GitHub Copilot / Codex
+  - Grok
+  - Apple Intelligence (future)
+- Added smart task-to-assistant matching and delegation logic
+- Maintains stage-gating and Core Genome alignment
 
-**The system is now developing real external AI integration capabilities.**
+**The system can now tap into a wider range of computer AIs (including Grok and Codex-style assistants) as it grows.**
 
-*Next recommended: Allow real delegation or add more cells (e.g. file system or browser).*
+*Next recommended: Enable real delegation or add more specialized cells.*

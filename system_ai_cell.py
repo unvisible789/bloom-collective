@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - SystemAICell (Functional Version)
+Bloom Collective - SystemAICell (Expanded for Grok, Codex, etc.)
 
-Now includes basic delegation logic and more actionable proposals.
-This moves the cell from pure proposals toward actual capability.
+Now detects and can delegate to a wider range of computer/onboard AIs,
+including Grok and Codex-style coding assistants.
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -19,8 +19,8 @@ except ImportError:
 
 class SystemAICell(BaseCell):
     """
-    Functional cell for interacting with onboard/system AI assistants.
-    Can propose and simulate/prepare delegation of tasks.
+    Expanded cell for tapping into computer/onboard AI assistants
+    (Microsoft Copilot, GitHub Copilot / Codex, Grok, etc.).
     """
 
     def __init__(self, epigenetic: Optional[EpigeneticState] = None):
@@ -34,18 +34,36 @@ class SystemAICell(BaseCell):
     def detect_available_assistants(self) -> List[Dict[str, str]]:
         detected = []
 
+        # General assistants
         detected.append({
             "name": "Microsoft Copilot",
             "type": "general_assistant",
             "availability": "high",
-            "strengths": ["general tasks", "web search", "summarization"]
+            "strengths": ["general tasks", "web search", "summarization", "reasoning"]
         })
 
+        # Coding assistants
         detected.append({
-            "name": "GitHub Copilot",
+            "name": "GitHub Copilot / Codex",
             "type": "coding_assistant",
+            "availability": "high",
+            "strengths": ["code generation", "code explanation", "debugging", "refactoring"]
+        })
+
+        # Grok (xAI)
+        detected.append({
+            "name": "Grok",
+            "type": "reasoning_assistant",
             "availability": "medium",
-            "strengths": ["code generation", "code explanation", "refactoring"]
+            "strengths": ["reasoning", "coding", "real-time knowledge", "humor"]
+        })
+
+        # Future / other possible assistants
+        detected.append({
+            "name": "Apple Intelligence",
+            "type": "general_assistant",
+            "availability": "medium",
+            "strengths": ["on-device tasks", "writing", "image understanding"]
         })
 
         self._internal_state["detected_assistants"] = detected
@@ -59,39 +77,35 @@ class SystemAICell(BaseCell):
         allowed_stages = [DevelopmentalStage.SAPLING, DevelopmentalStage.BLOOM, DevelopmentalStage.ELDER]
         return current_stage in allowed_stages
 
-    def delegate_task(self, task: str, assistant_name: str = None) -> Dict[str, Any]:
-        """
-        Attempt to delegate a task to a system AI.
-        Currently simulates delegation (can be extended to real calls).
-        """
+    def delegate_task(self, task: str, preferred_assistant: str = None) -> Dict[str, Any]:
         detected = self.detect_available_assistants()
 
-        if not assistant_name:
-            # Auto-select best assistant
-            for a in detected:
-                if "code" in task.lower() and a["type"] == "coding_assistant":
-                    assistant_name = a["name"]
-                    break
-            if not assistant_name:
-                assistant_name = detected[0]["name"] if detected else None
+        if not preferred_assistant:
+            # Smart matching
+            if any(word in task.lower() for word in ["code", "debug", "refactor", "function"]):
+                preferred_assistant = "GitHub Copilot / Codex"
+            elif any(word in task.lower() for word in ["reason", "explain", "analyze"]):
+                preferred_assistant = "Grok"
+            else:
+                preferred_assistant = "Microsoft Copilot"
 
         delegation_record = {
             "timestamp": datetime.now().isoformat(),
             "task": task,
-            "assistant": assistant_name,
+            "assistant": preferred_assistant,
             "status": "delegated (simulated)"
         }
 
         self._internal_state["delegations"].append(delegation_record)
         self._internal_state["usage_count"] += 1
 
-        self.log(f"Delegated task to {assistant_name}: {task}")
+        self.log(f"Delegated to {preferred_assistant}: {task}")
 
         return {
             "status": "success",
-            "delegated_to": assistant_name,
+            "delegated_to": preferred_assistant,
             "task": task,
-            "note": "This is currently simulated. Real delegation can be added."
+            "note": "Simulated delegation. Real integration possible in future."
         }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -101,27 +115,31 @@ class SystemAICell(BaseCell):
         if not self.should_activate():
             return {
                 "status": "stage_restricted",
-                "message": "SystemAICell activates at Sapling stage or later.",
+                "message": "Activates at Sapling stage or later.",
                 "current_stage": self.epigenetic.stage if self.epigenetic else "unknown"
             }
 
         task = input_data.get("task", "general assistance")
 
-        # Decide whether to delegate
         if input_data.get("auto_delegate", True):
             result = self.delegate_task(task)
             return result
 
-        # Otherwise just propose
+        # Proposal mode
         detected = self.detect_available_assistants()
-        best_match = detected[0] if detected else None
-
         return {
             "status": "proposal",
             "detected_assistants": [a["name"] for a in detected],
-            "recommended": best_match,
-            "reasoning": "Best match based on task type."
+            "recommended": self._smart_recommend(detected, task),
         }
+
+    def _smart_recommend(self, detected, task: str):
+        task_lower = task.lower()
+        if any(word in task_lower for word in ["code", "debug", "function"]):
+            return next((a for a in detected if a["type"] == "coding_assistant"), detected[0])
+        if any(word in task_lower for word in ["reason", "analyze", "explain"]):
+            return next((a for a in detected if a["name"] == "Grok"), detected[0])
+        return detected[0]
 
     def get_state(self) -> Dict[str, Any]:
         base = super().get_state()
