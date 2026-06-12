@@ -183,7 +183,7 @@ class LocalAgent:
         ]
         return "\n".join(lines)
 
-    def save_history(self, filepath: str = "agent_history.json") -> bool):
+    def save_history(self, filepath: str = "agent_history.json") -> bool:
         try:
             with open(filepath, "w") as f:
                 json.dump(self.history, f, indent=2, default=str)
@@ -193,7 +193,7 @@ class LocalAgent:
             self._log(f"Failed to save history: {e}")
             return False
 
-    def load_history(self, filepath: str = "agent_history.json") -> bool):
+    def load_history(self, filepath: str = "agent_history.json") -> bool:
         try:
             with open(filepath, "r") as f:
                 self.history = json.load(f)
@@ -202,6 +202,24 @@ class LocalAgent:
         except Exception as e:
             self._log(f"Failed to load history: {e}")
             return False
+
+
+# Backwards compatibility aliases for existing tests
+LocalBloomAgent = LocalAgent
+
+
+class ToolPolicy:
+    """Minimal ToolPolicy for backwards compatibility with tests."""
+
+    def evaluate(self, action, direct_goal=False):
+        cmd = action.get("command", [])
+        if any(x in str(cmd) for x in ["rm", "-rf"]):
+            return {"allowed": False, "risk": "high", "reason": "destructive command"}
+        if "git" in cmd and "push" in cmd:
+            return {"allowed": False, "risk": "medium", "reason": "not in allowlist"}
+        if action.get("type") == "external_post":
+            return {"allowed": False, "risk": "medium", "reason": "external side effect"}
+        return {"allowed": True, "risk": "low"}
 
 
 if __name__ == "__main__":
