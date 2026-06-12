@@ -204,13 +204,10 @@ class LocalAgent:
             return False
 
 
-# Backwards compatibility aliases for existing tests
+# Backwards compatibility for existing tests
 LocalBloomAgent = LocalAgent
 
-
 class ToolPolicy:
-    """Minimal ToolPolicy for backwards compatibility with tests."""
-
     def evaluate(self, action, direct_goal=False):
         cmd = action.get("command", [])
         if any(x in str(cmd) for x in ["rm", "-rf"]):
