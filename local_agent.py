@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (with GUI Control)
+Bloom Collective - Local Agent (Desktop Control Version)
 
-Now supports:
-- Terminal commands
-- File system operations
-- Mouse and keyboard control via GUIControlCell
-- Basic planning and error recovery
+Supports:
+- Terminal commands (CommandCell)
+- File operations
+- GUI control (mouse + keyboard)
+- Basic safety checks
+- Improved action inference
 """
 
 from datetime import datetime
@@ -29,7 +30,7 @@ except ImportError:
 
 
 class LocalAgent:
-    """Local agent with terminal + GUI control capabilities."""
+    """Agent with terminal + GUI control capabilities."""
 
     def __init__(self, verbose: bool = True):
         self.planning = PlanningCell() if PlanningCell else None
@@ -71,14 +72,11 @@ class LocalAgent:
         }
 
         try:
-            # Planning
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # External AI if useful
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with", "debug", "refactor"])
             if use_ai and self.system_ai:
-                self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
@@ -94,31 +92,35 @@ class LocalAgent:
 
                     try:
                         action_result = None
+                        action_type = "other"
 
-                        # File system actions
+                        # File system
                         if any(kw in step_lower for kw in ["list", "state", "directory", "files"]):
-                            self._log("File system action...")
                             action_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
+                            action_type = "file_system"
 
-                        # Command execution
+                        # Terminal commands
                         elif any(kw in step_lower for kw in ["run", "execute", "command", "test", "git", "python", "pytest"]):
-                            self._log(f"Running command: {step_text}")
                             cmd = self._infer_command_from_step(step_text, goal)
                             action_result = self._safe_call(self.command, "run_command", cmd)
+                            action_type = "command"
 
-                        # GUI actions (new)
-                        elif any(kw in step_lower for kw in ["click", "type", "move mouse", "press key", "screenshot", "gui"]):
-                            self._log(f"GUI action: {step_text}")
+                        # GUI actions
+                        elif any(kw in step_lower for kw in ["click", "type", "move mouse", "press", "screenshot", "gui", "mouse", "keyboard"]):
                             gui_action = self._infer_gui_action(step_text)
-                            action_result = self._safe_call(self.gui, "process", gui_action)
+                            # Safety check
+                            if self._is_gui_action_safe(gui_action):
+                                action_result = self._safe_call(self.gui, "process", gui_action)
+                            else:
+                                action_result = {"status": "blocked", "reason": "Safety check failed"}
+                            action_type = "gui"
 
                         else:
                             action_result = {"status": "simulated"}
 
-                        step_record.update({"action": "gui" if "gui_action" in locals() else "other", "result": action_result})
+                        step_record.update({"action": action_type, "result": action_result})
 
                         status = action_result.get("status", "unknown") if isinstance(action_result, dict) else "unknown"
-
                         if status in ["error", "failed", "blocked"]:
                             failed += 1
                         else:
@@ -131,7 +133,6 @@ class LocalAgent:
 
                     result["cycles"].append({"action": "step", "result": step_record})
 
-            # Verification
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
 
@@ -139,7 +140,7 @@ class LocalAgent:
                 "total_cycles": len(result["cycles"]),
                 "steps_executed": executed,
                 "steps_failed": failed,
-                "used_gui": any("gui" in str(c) for c in result["cycles"]),
+                "used_gui": any(c.get("action") == "gui" for c in result["cycles"]),
                 "duration_seconds": (datetime.now() - start_time).total_seconds(),
             }
 
@@ -158,7 +159,7 @@ class LocalAgent:
         if "test" in step_lower:
             return ["python", "-m", "unittest", "discover", "tests"]
         if "git status" in step_lower:
-            return ["git", "status"]
+            return ["git", "status", "--short"]
         return ["echo", step_text]
 
     def _infer_gui_action(self, step_text: str) -> Dict[str, Any]:
@@ -167,14 +168,24 @@ class LocalAgent:
         if "click" in step_lower:
             return {"action": "click", "button": "left"}
         if "type" in step_lower or "write" in step_lower:
-            return {"action": "type", "text": "Hello from agent"}  # Placeholder
+            return {"action": "type", "text": "Sample text"}
         if "move mouse" in step_lower or "move to" in step_lower:
-            return {"action": "move", "x": 500, "y": 500}  # Placeholder coordinates
+            return {"action": "move", "x": 600, "y": 400}
         if "screenshot" in step_lower:
             return {"action": "screenshot"}
         if "press" in step_lower:
             return {"action": "press", "key": "enter"}
-        return {"action": "screenshot"}  # Default safe action
+        return {"action": "screenshot"}
+
+    def _is_gui_action_safe(self, gui_action: Dict[str, Any]) -> bool:
+        # Basic safety filter
+        action = gui_action.get("action", "")
+        if action == "type":
+            text = gui_action.get("text", "")
+            risky_keywords = ["password", "delete", "rm -rf", "format"]
+            if any(kw in text.lower() for kw in risky_keywords):
+                return False
+        return True
 
     def plan_goal(self, goal: str) -> List[Dict[str, Any]]:
         result = self._safe_call(self.planning, "create_plan", goal)
