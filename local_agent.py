@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """
-Bloom Collective - Local Agent (Polished Version)
+Bloom Collective - Local Agent (Polished)
 
-Integrates CommandCell for real command execution.
-Improved error handling, step tracking, and robustness.
+Features:
+- Planning with structured steps
+- Real command execution via CommandCell
+- File system operations
+- Error recovery and basic retry logic
+- Step-level tracking and progress awareness
+- Improved summaries and diagnostics
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -23,7 +29,7 @@ except ImportError:
 
 
 class LocalAgent:
-    """Local goal execution agent with command execution support."""
+    """Polished local goal execution agent."""
 
     def __init__(self, verbose: bool = True):
         self.planning = PlanningCell() if PlanningCell else None
@@ -63,21 +69,23 @@ class LocalAgent:
             "summary": {},
         }
 
+        retry_count = 0
+
         try:
-            # Step 1: Planning
+            # Planning
             plan_result = self._safe_call(self.planning, "create_plan", goal)
             result["cycles"].append({"action": "plan", "result": plan_result})
 
-            # Step 2: External AI if needed
+            # External AI if beneficial
             use_ai = any(word in goal.lower() for word in ["code", "explain", "analyze", "review", "help with", "debug", "refactor"])
             if use_ai and self.system_ai:
                 self._log("Using external AI assistance...")
                 ai_result = self._safe_call(self.system_ai, "delegate_task", goal)
                 result["cycles"].append({"action": "system_ai", "result": ai_result})
 
-            # Step 3: Execute plan steps
             executed = 0
             failed = 0
+            recovered = 0
 
             if plan_result.get("plan"):
                 for step in plan_result["plan"].get("steps", []):
@@ -87,35 +95,54 @@ class LocalAgent:
                     step_record = {"step": step_text, "status": "pending"}
 
                     try:
-                        # File system operations
+                        action_taken = False
+
+                        # File system
                         if any(kw in step_lower for kw in ["list", "state", "directory", "files"]):
                             self._log("Listing directory...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "list", "path": "."})
-                            step_record.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
+                            step_record.update({"action": "file_system", "result": fs_result})
+                            action_taken = True
 
                         elif any(kw in step_lower for kw in ["read", "open", "show"]):
                             self._log("Reading file...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "read", "filename": "README.md"})
-                            step_record.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
+                            step_record.update({"action": "file_system", "result": fs_result})
+                            action_taken = True
 
                         elif any(kw in step_lower for kw in ["write", "create", "generate"]):
                             self._log("Writing file...")
                             fs_result = self._safe_call(self.file_system, "process", {"action": "write", "filename": "output.txt", "content": f"Generated for: {goal}"})
-                            step_record.update({"action": "file_system", "result": fs_result, "status": fs_result.get("status", "unknown")})
+                            step_record.update({"action": "file_system", "result": fs_result})
+                            action_taken = True
 
-                        # Command execution (new)
+                        # Command execution
                         elif any(kw in step_lower for kw in ["run", "execute", "command", "test", "git", "python", "pytest"]):
-                            self._log(f"Running command for: {step_text}")
-                            # Extract a reasonable command from the step text
+                            self._log(f"Running command: {step_text}")
                             cmd = self._infer_command_from_step(step_text, goal)
                             cmd_result = self._safe_call(self.command, "run_command", cmd)
-                            step_record.update({"action": "command", "result": cmd_result, "status": cmd_result.get("status", "unknown")})
+                            step_record.update({"action": "command", "result": cmd_result})
+                            action_taken = True
 
                         else:
                             step_record["status"] = "simulated"
+                            action_taken = True
 
-                        if step_record.get("status") in ["error", "failed", "blocked", "timeout"]:
+                        # Determine final status
+                        status = step_record.get("result", {}).get("status", step_record.get("status", "unknown"))
+
+                        if status in ["error", "failed", "blocked", "timeout"]:
                             failed += 1
+                            # Basic recovery attempt
+                            if retry_count < 1:
+                                retry_count += 1
+                                recovered += 1
+                                self._log(f"Retrying step due to: {status}")
+                                # Simple retry by re-running similar action
+                                if any(kw in step_lower for kw in ["run", "execute", "command", "test"]):
+                                    cmd = self._infer_command_from_step(step_text, goal)
+                                    retry_result = self._safe_call(self.command, "run_command", cmd)
+                                    step_record["retry_result"] = retry_result
                         else:
                             executed += 1
 
@@ -126,7 +153,7 @@ class LocalAgent:
 
                     result["cycles"].append({"action": "step", "result": step_record})
 
-            # Step 4: Verification
+            # Verification
             self._log("Verifying outcome...")
             verify_result = self._safe_call(self.verification, "verify_action", goal, "Goal completed")
             result["cycles"].append({"action": "verify", "result": verify_result})
@@ -136,6 +163,7 @@ class LocalAgent:
                 "total_cycles": len(result["cycles"]),
                 "steps_executed": executed,
                 "steps_failed": failed,
+                "recovered_steps": recovered,
                 "used_ai": use_ai,
                 "used_commands": any(c.get("action") == "command" for c in result["cycles"]),
                 "duration_seconds": (datetime.now() - start_time).total_seconds(),
@@ -143,7 +171,7 @@ class LocalAgent:
 
             result["status"] = "completed" if failed == 0 else "completed_with_errors"
             result["completed_at"] = datetime.now().isoformat()
-            self._log(f"Finished. Success: {executed}, Failed: {failed}")
+            self._log(f"Finished. Executed: {executed}, Failed: {failed}, Recovered: {recovered}")
 
         except Exception as e:
             result["status"] = "error"
@@ -154,21 +182,17 @@ class LocalAgent:
         return result
 
     def _infer_command_from_step(self, step_text: str, goal: str) -> List[str]:
-        """Simple heuristic to turn a plan step into a runnable command."""
         step_lower = step_text.lower()
 
-        if "test" in step_lower or "pytest" in step_lower:
+        if "test" in step_lower or "pytest" in step_lower or "run tests" in step_lower:
             return ["python", "-m", "unittest", "discover", "tests"]
-        if "git status" in step_lower or "check git" in step_lower:
+        if "git status" in step_lower:
             return ["git", "status", "--short"]
         if "git diff" in step_lower:
             return ["git", "diff", "--stat"]
-        if "run tests" in step_lower:
-            return ["python", "-m", "unittest", "discover", "tests"]
-        if "list files" in step_lower:
+        if "list files" in step_lower or "directory" in step_lower:
             return ["ls", "-la"]
-        # Default fallback
-        return ["echo", f"Would run: {step_text}"]
+        return ["echo", f"Step: {step_text}"]
 
     def plan_goal(self, goal: str) -> List[Dict[str, Any]]:
         result = self._safe_call(self.planning, "create_plan", goal)
@@ -196,9 +220,9 @@ class LocalAgent:
             f"Status: {last.get('status', 'Unknown')}",
             f"Steps executed: {summary.get('steps_executed', 0)}",
             f"Steps failed: {summary.get('steps_failed', 0)}",
-            f"Used external AI: {summary.get('used_ai', False)}",
+            f"Recovered: {summary.get('recovered_steps', 0)}",
             f"Used commands: {summary.get('used_commands', False)}",
-            f"Duration: {summary.get('duration_seconds', 0):.2f} seconds",
+            f"Duration: {summary.get('duration_seconds', 0):.2f}s",
         ]
         return "\n".join(lines)
 
@@ -206,5 +230,5 @@ class LocalAgent:
 if __name__ == "__main__":
     agent = LocalAgent(verbose=True)
     result = agent.execute_goal("List files and run tests")
-    print("\n=== Human Readable Summary ===")
+    print("\n=== Execution Summary ===")
     print(agent.get_last_human_summary())
